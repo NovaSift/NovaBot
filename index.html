@@ -783,7 +783,7 @@
               <span class="side ${t.side}">${t.side}</span>
               <span class="pos-sym">$${esc(t.symbol)}</span>
             </div>
-            <div class="pos-det">${t.amountSol.toFixed(3)} SOL @ ${formatPrice(t.priceSol)} · ${new Date(t.time).toLocaleString()}</div>
+            <div class="pos-det">${t.amountSol.toFixed(3)} SOL @ ${formatPrice(t.priceSol)}${t.priceSource ? ' ('+t.priceSource+')' : ''}${t.pnlSol != null ? ' · PnL ' + (t.pnlSol>=0?'+':'') + t.pnlSol.toFixed(4) : ''} · ${new Date(t.time).toLocaleString()}</div>
           </div>
         </div>`).join('');
     }
@@ -826,24 +826,43 @@
     toast(`Bought ${buySize.toFixed(2)} SOL of $${pos.symbol} @ ${formatPrice(price)}`);
   }
 
-  function sell(mint, pct) {
+  async function sell(mint, pct) {
     const pos = portfolio.positions[mint];
     if (!pos) return;
+    toast('Fetching live price…');
+    let price = pos.avgEntrySol || 0.00001;
+    let priceSource = 'entry';
+    try {
+      const meta = await fetchMeta(mint);
+      if (meta && meta.priceSol != null && meta.priceSol > 0) {
+        price = meta.priceSol;
+        priceSource = 'live';
+        // keep scanner cache fresh if present
+        const t = tokens.find(x => x.mint === mint);
+        if (t) t.priceSol = meta.priceSol;
+      }
+    } catch (e) {}
     const frac = Math.min(100, Math.max(0, pct)) / 100;
     const tok = pos.amount * frac;
-    const price = pos.avgEntrySol || 0.00001;
     const sol = tok * price;
+    const costBasis = tok * (pos.avgEntrySol || price);
+    const pnl = sol - costBasis;
     portfolio.balance += sol;
     pos.amount -= tok;
-    pos.totalCostSol = pos.amount * pos.avgEntrySol;
+    pos.totalCostSol = pos.amount * (pos.avgEntrySol || 0);
     if (pos.amount < 1e-9) delete portfolio.positions[mint];
     portfolio.trades.unshift({
       id: Date.now().toString(), side: 'sell', mint, symbol: pos.symbol,
-      amountSol: sol, tokens: tok, priceSol: price, percent: pct, time: new Date().toISOString()
+      amountSol: sol, tokens: tok, priceSol: price, percent: pct,
+      entrySol: pos.avgEntrySol || null,
+      pnlSol: pnl,
+      priceSource,
+      time: new Date().toISOString()
     });
     savePortfolio();
     renderPortfolio();
-    toast(`Sold ${pct}% of $${pos.symbol}`);
+    const pnlStr = (pnl >= 0 ? '+' : '') + pnl.toFixed(4);
+    toast(`Sold ${pct}% $${pos.symbol} @ ${formatPrice(price)} SOL (${priceSource}) · PnL ${pnlStr}`);
   }
 
   async function showAgents(mint) {
@@ -1017,18 +1036,38 @@
       toast('Set Worker URL and secret first');
       return;
     }
+    // Ensure base URL only (no /portfolio already)
+    cfg.workerUrl = cfg.workerUrl.replace(/\/portfolio\/?$/, '').replace(/\/api\/?$/, '');
+    saveSyncConfig(cfg);
     savePortfolio();
     toast('Syncing to GitHub…');
+    const body = JSON.stringify(buildBackup());
+    const paths = ['/portfolio', '/api/portfolio'];
+    let lastErr = null;
     try {
-      const res = await fetch(cfg.workerUrl + '/portfolio', {
-        method: 'POST',
-        headers: syncHeaders(cfg),
-        body: JSON.stringify(buildBackup())
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
-      toast('Synced to GitHub');
-      updateSyncStatus();
+      for (const p of paths) {
+        const res = await fetch(cfg.workerUrl + p, {
+          method: 'POST',
+          headers: syncHeaders(cfg),
+          body
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          toast('Synced to GitHub');
+          updateSyncStatus();
+          return;
+        }
+        if (res.status === 401) {
+          throw new Error('Unauthorized — check SYNC_SECRET matches Cloudflare');
+        }
+        if (res.status === 405) {
+          lastErr = 'HTTP 405 (Worker may need redeploy — paste latest worker.js)';
+          continue;
+        }
+        lastErr = data.error || data.detail?.message || ('HTTP ' + res.status);
+        if (res.status !== 404) break;
+      }
+      throw new Error(lastErr || 'Sync failed');
     } catch (e) {
       toast('Sync failed: ' + (e.message || 'network'));
     }
@@ -1041,6 +1080,8 @@
       toast('Set Worker URL and secret first');
       return;
     }
+    cfg.workerUrl = cfg.workerUrl.replace(/\/portfolio\/?$/, '').replace(/\/api\/?$/, '');
+    saveSyncConfig(cfg);
     toast('Loading from GitHub…');
     try {
       const res = await fetch(cfg.workerUrl + '/portfolio', {
@@ -1048,6 +1089,7 @@
         headers: syncHeaders(cfg)
       });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401) throw new Error('Unauthorized — check SYNC_SECRET');
       if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
       if (!data.exists || !data.portfolio) {
         toast('No portfolio file on GitHub yet — Sync first');
