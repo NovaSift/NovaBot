@@ -230,12 +230,16 @@
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+        <button class="btn btn-primary btn-block" id="syncUpBtn" style="margin-top:0">Sync to GitHub</button>
+        <button class="btn btn-ghost btn-block" id="syncDownBtn" style="margin-top:0">Restore from GitHub</button>
+        <button class="btn btn-ghost btn-block" id="syncSetupBtn" style="margin-top:0">Cloud sync setup</button>
         <button class="btn btn-ghost btn-block" id="exportBtn" style="margin-top:0">Export backup</button>
         <button class="btn btn-ghost btn-block" id="importBtn" style="margin-top:0">Import backup</button>
         <input type="file" id="importFile" accept="application/json,.json" style="display:none" />
         <button class="btn btn-ghost btn-block" id="resetBtn" style="margin-top:0">Reset to 5 SOL</button>
       </div>
-      <p class="note">Export saves open positions + full history as a JSON file. You can keep it in Files or upload it to your GitHub repo as a backup. Import restores it.</p>
+      <p class="note" id="syncStatus">Cloud sync: not configured. Tap Cloud sync setup.</p>
+      <p class="note">Export/Import still work offline. GitHub sync uses your Cloudflare Worker (token never stored in the app).</p>
     </div>
     <div class="card">
       <h2>Open Positions</h2>
@@ -336,6 +340,8 @@
   const KEY = 'novabot_portfolio_v3';
   const RULES_KEY = 'novabot_rules_v1';
   const FILTERS_KEY = 'novabot_filters_v1';
+  const SYNC_KEY = 'novabot_sync_v1';
+
   const IDB_NAME = 'NovaBotDB';
   const IDB_STORE = 'kv';
 
@@ -952,7 +958,122 @@
   });
 
   document.getElementById('refreshBtn').addEventListener('click', fetchLaunches);
+  function loadSyncConfig() {
+    try {
+      const raw = localStorage.getItem(SYNC_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { workerUrl: '', secret: '' };
+  }
+  function saveSyncConfig(cfg) {
+    localStorage.setItem(SYNC_KEY, JSON.stringify(cfg));
+    updateSyncStatus();
+  }
+  function updateSyncStatus() {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    const cfg = loadSyncConfig();
+    if (cfg.workerUrl && cfg.secret) {
+      el.textContent = 'Cloud sync ready · ' + cfg.workerUrl.replace(/^https?:\/\//, '').slice(0, 40);
+    } else {
+      el.textContent = 'Cloud sync: not configured. Tap Cloud sync setup.';
+    }
+  }
+  function syncHeaders(cfg) {
+    return {
+      'Content-Type': 'application/json',
+      'X-NovaBot-Secret': cfg.secret
+    };
+  }
+  function normalizeWorkerUrl(url) {
+    return String(url || '').trim().replace(/\/+$/, '');
+  }
+
+  async function syncToGitHub() {
+    const cfg = loadSyncConfig();
+    cfg.workerUrl = normalizeWorkerUrl(cfg.workerUrl);
+    if (!cfg.workerUrl || !cfg.secret) {
+      toast('Set Worker URL and secret first');
+      return;
+    }
+    savePortfolio();
+    toast('Syncing to GitHub…');
+    try {
+      const res = await fetch(cfg.workerUrl + '/portfolio', {
+        method: 'POST',
+        headers: syncHeaders(cfg),
+        body: JSON.stringify(buildBackup())
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+      toast('Synced to GitHub');
+      updateSyncStatus();
+    } catch (e) {
+      toast('Sync failed: ' + (e.message || 'network'));
+    }
+  }
+
+  async function restoreFromGitHub() {
+    const cfg = loadSyncConfig();
+    cfg.workerUrl = normalizeWorkerUrl(cfg.workerUrl);
+    if (!cfg.workerUrl || !cfg.secret) {
+      toast('Set Worker URL and secret first');
+      return;
+    }
+    toast('Loading from GitHub…');
+    try {
+      const res = await fetch(cfg.workerUrl + '/portfolio', {
+        method: 'GET',
+        headers: syncHeaders(cfg)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+      if (!data.exists || !data.portfolio) {
+        toast('No portfolio file on GitHub yet — Sync first');
+        return;
+      }
+      if (!confirm('Replace local portfolio with GitHub backup?')) return;
+      const p = data.portfolio;
+      portfolio = {
+        balance: p.balance,
+        positions: p.positions || {},
+        trades: Array.isArray(p.trades) ? p.trades : [],
+        createdAt: p.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      if (data.rules && typeof data.rules === 'object') {
+        rules = { ...DEFAULT_RULES, ...data.rules };
+        saveRulesObj();
+        fillRulesUI();
+      }
+      if (data.filters && typeof data.filters === 'object') {
+        filters = { ...filters, ...data.filters };
+        maxAgeMin = filters.maxAge || maxAgeMin;
+        saveFilters();
+        syncFilterChips();
+      }
+      savePortfolio();
+      renderPortfolio();
+      tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
+      renderTokens();
+      toast('Restored from GitHub');
+    } catch (e) {
+      toast('Restore failed: ' + (e.message || 'network'));
+    }
+  }
+
+  function openSyncSetup() {
+    const cfg = loadSyncConfig();
+    const url = prompt('Cloudflare Worker URL (https://….workers.dev)', cfg.workerUrl || '');
+    if (url === null) return;
+    const secret = prompt('SYNC_SECRET (same as in Cloudflare)', cfg.secret || '');
+    if (secret === null) return;
+    saveSyncConfig({ workerUrl: normalizeWorkerUrl(url), secret: String(secret).trim() });
+    toast('Cloud sync settings saved on this phone');
+  }
+
   function buildBackup() {
+
     return {
       version: 3,
       exportedAt: new Date().toISOString(),
@@ -968,6 +1089,11 @@
       filters: filters
     };
   }
+
+  document.getElementById('syncUpBtn').addEventListener('click', syncToGitHub);
+  document.getElementById('syncDownBtn').addEventListener('click', restoreFromGitHub);
+  document.getElementById('syncSetupBtn').addEventListener('click', openSyncSetup);
+  updateSyncStatus();
 
   document.getElementById('exportBtn').addEventListener('click', () => {
     savePortfolio();
