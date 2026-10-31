@@ -252,6 +252,7 @@
       <div style="display:flex;flex-direction:column;gap:8px">
         <button class="btn btn-primary btn-block" id="syncUpBtn" style="margin-top:0">Sync to GitHub</button>
         <button class="btn btn-ghost btn-block" id="syncDownBtn" style="margin-top:0">Restore from GitHub</button>
+        <button class="btn btn-ghost btn-block" id="syncTestBtn" style="margin-top:0">Test connection</button>
         <button class="btn btn-ghost btn-block" id="syncSetupBtn" style="margin-top:0">Cloud sync setup</button>
       </div>
       <p class="note">Uses your Cloudflare Worker. GitHub token stays on the server, not in this app.</p>
@@ -1029,43 +1030,57 @@
     return String(url || '').trim().replace(/\/+$/, '');
   }
 
+  function cleanWorkerBase(url) {
+    return normalizeWorkerUrl(url)
+      .replace(/\/portfolio\/?$/i, '')
+      .replace(/\/api\/?$/i, '')
+      .replace(/\/sync\/?$/i, '');
+  }
+
   async function syncToGitHub() {
     const cfg = loadSyncConfig();
-    cfg.workerUrl = normalizeWorkerUrl(cfg.workerUrl);
+    cfg.workerUrl = cleanWorkerBase(cfg.workerUrl);
     if (!cfg.workerUrl || !cfg.secret) {
       toast('Set Worker URL and secret first');
       return;
     }
-    // Ensure base URL only (no /portfolio already)
-    cfg.workerUrl = cfg.workerUrl.replace(/\/portfolio\/?$/, '').replace(/\/api\/?$/, '');
     saveSyncConfig(cfg);
     savePortfolio();
     toast('Syncing to GitHub…');
     const body = JSON.stringify(buildBackup());
-    const paths = ['/portfolio', '/api/portfolio'];
+    // Prefer POST to worker root (v4 worker accepts write on any path)
+    const urls = [cfg.workerUrl + '/', cfg.workerUrl + '/portfolio', cfg.workerUrl];
     let lastErr = null;
     try {
-      for (const p of paths) {
-        const res = await fetch(cfg.workerUrl + p, {
-          method: 'POST',
-          headers: syncHeaders(cfg),
-          body
-        });
+      for (const url of urls) {
+        let res;
+        try {
+          res = await fetch(url, {
+            method: 'POST',
+            headers: syncHeaders(cfg),
+            body,
+            mode: 'cors',
+            cache: 'no-store'
+          });
+        } catch (netErr) {
+          lastErr = 'Network: ' + (netErr.message || 'failed');
+          continue;
+        }
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.ok) {
-          toast('Synced to GitHub');
+          toast('Synced to GitHub ✓');
           updateSyncStatus();
           return;
         }
         if (res.status === 401) {
-          throw new Error('Unauthorized — check SYNC_SECRET matches Cloudflare');
+          throw new Error('Unauthorized — SYNC_SECRET does not match Cloudflare');
         }
-        if (res.status === 405) {
-          lastErr = 'HTTP 405 (Worker may need redeploy — paste latest worker.js)';
-          continue;
-        }
-        lastErr = data.error || data.detail?.message || ('HTTP ' + res.status);
-        if (res.status !== 404) break;
+        const detail = data.detail?.message || data.detail?.documentation_url || '';
+        lastErr = (data.error || ('HTTP ' + res.status)) + (detail ? ' · ' + detail : '');
+        // 405 on one URL — try next
+        if (res.status === 405) continue;
+        if (res.status === 404) continue;
+        break;
       }
       throw new Error(lastErr || 'Sync failed');
     } catch (e) {
@@ -1073,20 +1088,42 @@
     }
   }
 
+  async function testSyncConnection() {
+    const cfg = loadSyncConfig();
+    cfg.workerUrl = cleanWorkerBase(cfg.workerUrl);
+    if (!cfg.workerUrl) { toast('Set Worker URL first'); return; }
+    toast('Testing Worker…');
+    try {
+      const res = await fetch(cfg.workerUrl + '/', { method: 'GET', cache: 'no-store', mode: 'cors' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const parts = [
+        'Worker OK v' + (data.version || '?'),
+        data.hasSecret ? 'secret:set' : 'secret:MISSING',
+        data.hasToken ? 'token:set' : 'token:MISSING',
+        data.hasRepo ? 'repo:set' : 'repo:MISSING'
+      ];
+      toast(parts.join(' · '));
+    } catch (e) {
+      toast('Test failed: ' + (e.message || 'network'));
+    }
+  }
+
   async function restoreFromGitHub() {
     const cfg = loadSyncConfig();
-    cfg.workerUrl = normalizeWorkerUrl(cfg.workerUrl);
+    cfg.workerUrl = cleanWorkerBase(cfg.workerUrl);
     if (!cfg.workerUrl || !cfg.secret) {
       toast('Set Worker URL and secret first');
       return;
     }
-    cfg.workerUrl = cfg.workerUrl.replace(/\/portfolio\/?$/, '').replace(/\/api\/?$/, '');
     saveSyncConfig(cfg);
     toast('Loading from GitHub…');
     try {
       const res = await fetch(cfg.workerUrl + '/portfolio', {
         method: 'GET',
-        headers: syncHeaders(cfg)
+        headers: syncHeaders(cfg),
+        mode: 'cors',
+        cache: 'no-store'
       });
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) throw new Error('Unauthorized — check SYNC_SECRET');
@@ -1155,6 +1192,7 @@
 
   document.getElementById('syncUpBtn').addEventListener('click', syncToGitHub);
   document.getElementById('syncDownBtn').addEventListener('click', restoreFromGitHub);
+  document.getElementById('syncTestBtn').addEventListener('click', testSyncConnection);
   document.getElementById('syncSetupBtn').addEventListener('click', openSyncSetup);
   updateSyncStatus();
 
