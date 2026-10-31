@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NovaBot" />
   <meta name="theme-color" content="#0b0f14" />
-  <meta name="description" content="NovaBot — Paper trading for pump.fun meme coins" />
   <title>NovaBot</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -20,51 +19,27 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
     [data-theme="dark"] {
-      --bg: #0b0f14;
-      --card: #161d26;
-      --elev: #1c2530;
-      --border: #2a3544;
-      --text: #eef2f7;
-      --muted: #8b9bb0;
-      --accent: #5b8def;
-      --green: #34d399;
-      --red: #f87171;
-      --orange: #fbbf24;
-      --purple: #a78bfa;
+      --bg: #0b0f14; --card: #161d26; --elev: #1c2530; --border: #2a3544;
+      --text: #eef2f7; --muted: #8b9bb0; --accent: #5b8def;
+      --green: #34d399; --red: #f87171; --orange: #fbbf24; --purple: #a78bfa;
     }
     [data-theme="light"] {
-      --bg: #f2f4f7;
-      --card: #ffffff;
-      --elev: #f8fafc;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --muted: #64748b;
-      --accent: #3b82f6;
-      --green: #059669;
-      --red: #dc2626;
-      --orange: #d97706;
-      --purple: #7c3aed;
+      --bg: #f2f4f7; --card: #ffffff; --elev: #f8fafc; --border: #e2e8f0;
+      --text: #0f172a; --muted: #64748b; --accent: #3b82f6;
+      --green: #059669; --red: #dc2626; --orange: #d97706; --purple: #7c3aed;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
     body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.45;
-      overscroll-behavior: none;
-      padding-top: var(--safe-top);
-      padding-bottom: calc(64px + var(--safe-bottom));
+      font-family: var(--font); background: var(--bg); color: var(--text);
+      line-height: 1.45; overscroll-behavior: none;
+      padding-top: var(--safe-top); padding-bottom: calc(64px + var(--safe-bottom));
     }
-
-    /* Header */
     .top {
       position: sticky; top: 0; z-index: 50;
       background: color-mix(in srgb, var(--bg) 92%, transparent);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 12px 16px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.15rem; }
@@ -82,8 +57,6 @@
       background: var(--card); color: var(--text); font-size: 1.1rem;
       display: flex; align-items: center; justify-content: center;
     }
-
-    /* Bottom nav */
     .nav {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
       background: var(--card); border-top: 1px solid var(--border);
@@ -97,35 +70,24 @@
     }
     .nav button.active { color: var(--accent); }
     .nav .ico { font-size: 1.25rem; }
-
-    /* Screens */
     .screen { display: none; padding: 14px 16px 24px; }
     .screen.active { display: block; }
-
-    /* Cards */
     .card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
     }
     .card h2 { font-size: 0.9rem; font-weight: 600; margin-bottom: 12px; }
-
-    .stats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
-    .stat {
-      background: var(--elev); border-radius: 10px; padding: 12px;
-    }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stat { background: var(--elev); border-radius: 10px; padding: 12px; }
     .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
     .stat-val { font-family: var(--mono); font-size: 1.15rem; font-weight: 600; margin-top: 2px; }
     .unit { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
-
     .size-row {
       display: flex; align-items: center; gap: 10px; margin: 12px 0 4px;
       font-size: 0.85rem; color: var(--muted);
     }
     .size-row input { flex: 1; accent-color: var(--accent); }
     #sizeVal { font-family: var(--mono); color: var(--text); font-weight: 600; min-width: 40px; }
-
     .btn {
       border: none; border-radius: 10px; padding: 10px 14px; font-size: 0.85rem;
       font-weight: 600; font-family: var(--font); cursor: pointer;
@@ -134,10 +96,9 @@
     .btn-primary:disabled { opacity: 0.4; }
     .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
     .btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
+    .btn-gmgn { background: transparent; color: var(--green); border: 1px solid var(--green); }
     .btn-sm { padding: 7px 11px; font-size: 0.78rem; }
     .btn-block { width: 100%; margin-top: 8px; }
-
-    /* Token list */
     .token {
       background: var(--elev); border: 1px solid var(--border); border-radius: 12px;
       padding: 12px; margin-bottom: 10px;
@@ -149,6 +110,16 @@
       display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 8px;
       font-size: 0.72rem; color: var(--muted); font-family: var(--mono);
     }
+    .stat-chips {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+    }
+    .chip {
+      font-size: 0.68rem; font-family: var(--mono); padding: 3px 8px; border-radius: 6px;
+      background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    }
+    .chip.warn { border-color: var(--orange); color: var(--orange); }
+    .chip.bad { border-color: var(--red); color: var(--red); }
+    .chip.good { border-color: var(--green); color: var(--green); }
     .badge-r {
       font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
       padding: 3px 8px; border-radius: 999px; flex-shrink: 0;
@@ -156,8 +127,7 @@
     .badge-r.pass { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
     .badge-r.fail { background: color-mix(in srgb, var(--red) 18%, transparent); color: var(--red); }
     .reasons { font-size: 0.72rem; color: var(--red); margin-top: 6px; line-height: 1.3; }
-    .token-actions { display: flex; gap: 8px; margin-top: 10px; }
-
+    .token-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .rules li {
       list-style: none; font-size: 0.82rem; color: var(--muted);
       padding: 8px 0; border-bottom: 1px solid var(--border);
@@ -170,16 +140,13 @@
       display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0;
     }
     .rules strong { color: var(--text); }
-
     .agent {
       background: var(--elev); border-radius: 10px; padding: 12px; margin-bottom: 8px;
     }
     .agent strong { color: var(--accent); font-size: 0.85rem; }
-    .agent p { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-
+    .agent p { font-size: 0.75rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
     .empty { text-align: center; color: var(--muted); padding: 28px 12px; font-size: 0.9rem; }
     .loading { text-align: center; color: var(--muted); padding: 20px; }
-
     .pos-row, .trade-row {
       background: var(--elev); border-radius: 10px; padding: 12px; margin-bottom: 8px;
       display: flex; justify-content: space-between; align-items: center; gap: 10px;
@@ -190,7 +157,6 @@
     .side { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
     .side.buy { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
     .side.sell { background: color-mix(in srgb, var(--red) 18%, transparent); color: var(--red); }
-
     .toast {
       position: fixed; left: 16px; right: 16px; bottom: calc(72px + var(--safe-bottom));
       background: var(--card); border: 1px solid var(--border); border-radius: 12px;
@@ -199,7 +165,6 @@
     }
     .toast.show { display: block; animation: slideUp 0.25s ease; }
     @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } }
-
     .sheet {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 80;
       display: none; align-items: flex-end;
@@ -213,6 +178,9 @@
       width: 36px; height: 4px; background: var(--border); border-radius: 2px;
       margin: 0 auto 16px;
     }
+    .note {
+      font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -225,7 +193,6 @@
     <button class="icon-btn" id="themeBtn" aria-label="Theme">🌙</button>
   </header>
 
-  <!-- Home / Portfolio -->
   <section id="screen-home" class="screen active">
     <div class="card">
       <h2>Portfolio</h2>
@@ -255,11 +222,12 @@
     </div>
   </section>
 
-  <!-- Scanner -->
   <section id="screen-scan" class="screen">
     <div class="card">
       <h2>New Launches</h2>
-      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Real pump.fun data · pumpdata.fun</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">
+        pumpdata.fun risk stats · GMGN deep links
+      </p>
       <div class="size-row">
         <span>Size</span>
         <input type="range" id="sizeSlider" min="0.05" max="0.5" step="0.05" value="0.1" />
@@ -270,7 +238,6 @@
     <div id="tokenList"><div class="loading">Loading…</div></div>
   </section>
 
-  <!-- Rules & Agents -->
   <section id="screen-rules" class="screen">
     <div class="card">
       <h2>Risk Officer Rules</h2>
@@ -282,6 +249,11 @@
         <li><span class="rn">5</span> Coin graduates → <strong>Sell 100%</strong></li>
         <li><span class="rn">6</span> Duplicate ticker → <strong>Skip</strong></li>
       </ul>
+      <p class="note">
+        Stats come from pumpdata.fun free checks (dev history, early bundle, serial flags).
+        Tap <strong>GMGN</strong> on any coin for full holder / bundler / smart-money view on gmgn.ai.
+        Official GMGN Agent API needs a free key + signing — planned for a future backend version.
+      </p>
     </div>
     <div class="card">
       <h2>Agent Team</h2>
@@ -294,7 +266,6 @@
     </div>
   </section>
 
-  <!-- History -->
   <section id="screen-history" class="screen">
     <div class="card">
       <h2>Trade History</h2>
@@ -310,7 +281,6 @@
   </nav>
 
   <div class="toast" id="toast"></div>
-
   <div class="sheet" id="sheet">
     <div class="sheet-body">
       <div class="sheet-handle"></div>
@@ -332,9 +302,7 @@
     } catch (e) {}
     return { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString() };
   }
-  function save() {
-    localStorage.setItem(KEY, JSON.stringify(portfolio));
-  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(portfolio)); }
 
   function toast(msg) {
     const t = document.getElementById('toast');
@@ -345,19 +313,52 @@
 
   function riskCheck(t) {
     const r = { pass: true, reasons: [] };
-    const bund = Number(t.bundlerHoldingsPct ?? 0);
-    const bundN = bund > 1 ? bund : bund * 100;
-    if (bundN > 25) { r.pass = false; r.reasons.push(`Bundlers ${bundN.toFixed(0)}%`); }
-    if (t.isKnownRugWallet || t.flags?.serial_launcher) {
-      r.pass = false; r.reasons.push('Serial / rug pattern');
+
+    // Rule 2: bundlers
+    let bund = Number(t.bundlerHoldingsPct ?? 0);
+    if (bund > 0 && bund <= 1) bund *= 100;
+    if (bund > 25) { r.pass = false; r.reasons.push(`Bundlers ${bund.toFixed(0)}%`); }
+
+    // Rule 1: dev holdings if we have numeric
+    const dev = Number(t.devHoldingsPct ?? 0);
+    if (dev > 10) { r.pass = false; r.reasons.push(`Dev ${dev.toFixed(1)}%`); }
+
+    // Rule 3: serial / rug
+    if (t.isKnownRugWallet || t.flags?.serial_launcher || hasFlag(t, 'serial_launcher')) {
+      r.pass = false; r.reasons.push('Serial launcher');
     }
-    if (t.devHoldingsPct > 10) {
-      r.pass = false; r.reasons.push(`Dev ${t.devHoldingsPct}%`);
+
+    // pumpdata rules_say
+    if (t.rules_say === 'skip') {
+      r.pass = false;
+      if (!r.reasons.length) r.reasons.push('pumpdata rules_say: skip');
     }
+
+    // Rule 6: duplicate ticker hints from check questions
     if (t.hasDuplicateTicker) {
       r.pass = false; r.reasons.push('Duplicate ticker');
     }
+
+    // Soft warnings (do not hard-block alone)
+    if (hasFlag(t, 'deployer_sells_fast')) r.reasons.push('Deployer sells fast (warn)');
+    if (hasFlag(t, 'never_ran')) r.reasons.push('Lookalikes never ran (warn)');
+    if (hasFlag(t, 'early_concentration')) {
+      if (bund <= 25) r.reasons.push('Early concentration (warn)');
+    }
+
     return r;
+  }
+
+  function hasFlag(t, name) {
+    if (!t.flags) return false;
+    if (Array.isArray(t.flags)) return t.flags.some(f => f.flag === name || f === name);
+    return !!t.flags[name];
+  }
+
+  function flagNames(t) {
+    if (!t.flags) return [];
+    if (Array.isArray(t.flags)) return t.flags.map(f => f.flag || f).filter(Boolean);
+    return Object.keys(t.flags).filter(k => t.flags[k]);
   }
 
   async function fetchLaunches() {
@@ -372,7 +373,7 @@
         const o = {};
         cols.forEach((c, i) => o[c] = row[i]);
         const age = o.created ? Math.max(0, (Date.now()/1000 - o.created)/60) : null;
-        const bundlePct = o.bundle_supply_share != null
+        let bundlePct = o.bundle_supply_share != null
           ? (o.bundle_supply_share > 1 ? o.bundle_supply_share : o.bundle_supply_share * 100)
           : null;
         const t = {
@@ -391,23 +392,44 @@
         t.ruleCheck = riskCheck(t);
         return t;
       });
-      // Light enrichment for first few (rate limit friendly)
-      for (let i = 0; i < Math.min(6, tokens.length); i++) {
+
+      // Enrich first 8 with full pre-buy check (rate-limit friendly)
+      for (let i = 0; i < Math.min(8, tokens.length); i++) {
         try {
           const c = await fetch(`https://pumpdata.fun/check/${tokens[i].mint}.json`).then(r => r.json());
-          if (c && c.flags) {
-            tokens[i].flags = c.flags;
-            if (c.flags.serial_launcher) tokens[i].isKnownRugWallet = true;
-            if (c.flags.early_concentration && tokens[i].bundlerHoldingsPct == null)
-              tokens[i].bundlerHoldingsPct = 30;
-            tokens[i].ruleCheck = riskCheck(tokens[i]);
-            tokens[i].rules_say = c.rules_say;
-          }
+          applyCheck(tokens[i], c);
+          tokens[i].ruleCheck = riskCheck(tokens[i]);
         } catch (e) {}
       }
       renderTokens();
     } catch (e) {
-      el.innerHTML = `<div class="empty">Could not load launches.<br>${e.message}</div>`;
+      el.innerHTML = `<div class="empty">Could not load launches.<br>${esc(e.message)}</div>`;
+    }
+  }
+
+  function applyCheck(t, c) {
+    if (!c) return;
+    t.check = c;
+    t.rules_say = c.rules_say;
+    t.answer = c.answer;
+    t.questions = c.questions;
+    // flags can be array of {flag, says}
+    if (Array.isArray(c.flags)) {
+      t.flags = c.flags;
+      t.flagMap = {};
+      c.flags.forEach(f => { if (f.flag) t.flagMap[f.flag] = f.says || true; });
+    } else {
+      t.flags = c.flags || {};
+      t.flagMap = t.flags;
+    }
+    if (hasFlag(t, 'serial_launcher')) t.isKnownRugWallet = true;
+    if (hasFlag(t, 'early_concentration') && t.bundlerHoldingsPct == null) {
+      t.bundlerHoldingsPct = 30;
+    }
+    // Parse duplicate ticker from questions if present
+    const q = (c.questions || []).find(x => /ticker|real \$/i.test(x.q || ''));
+    if (q && /other graduated|launched \d+ times/i.test(q.a || '')) {
+      t.hasDuplicateTicker = true;
     }
   }
 
@@ -421,6 +443,27 @@
       const pass = t.ruleCheck?.pass !== false;
       const reasons = (t.ruleCheck?.reasons || []).join(' · ');
       const age = t.ageMinutes != null ? t.ageMinutes.toFixed(0) + 'm' : '—';
+      const chips = [];
+      if (t.deployer_launches_before != null) {
+        const cls = t.deployer_launches_before > 20 ? 'bad' : (t.deployer_launches_before > 5 ? 'warn' : '');
+        chips.push(`<span class="chip ${cls}">dev ${t.deployer_launches_before} launches</span>`);
+      }
+      if (t.deployer_graduations_before != null) {
+        chips.push(`<span class="chip">grad ${t.deployer_graduations_before}</span>`);
+      }
+      if (t.bundlerHoldingsPct != null) {
+        const b = Number(t.bundlerHoldingsPct);
+        const cls = b > 25 ? 'bad' : (b > 10 ? 'warn' : 'good');
+        chips.push(`<span class="chip ${cls}">bundle ${b.toFixed(0)}%</span>`);
+      }
+      if (t.rules_say) {
+        chips.push(`<span class="chip ${t.rules_say==='skip'?'bad':'good'}">rules: ${esc(t.rules_say)}</span>`);
+      }
+      flagNames(t).forEach(f => {
+        chips.push(`<span class="chip bad">${esc(f)}</span>`);
+      });
+      if (t.graduated) chips.push(`<span class="chip warn">graduated</span>`);
+
       return `<div class="token">
         <div class="token-top">
           <div>
@@ -431,18 +474,23 @@
         </div>
         <div class="meta">
           <span>${age}</span>
-          ${t.bundlerHoldingsPct!=null?`<span>bund ${Number(t.bundlerHoldingsPct).toFixed(0)}%</span>`:''}
-          ${t.deployer_launches_before!=null?`<span>dev ${t.deployer_launches_before} launches</span>`:''}
-          ${t.graduated?'<span style="color:var(--orange)">Graduated</span>':''}
+          ${t.buyers_first_10s!=null?`<span>${t.buyers_first_10s} buyers/10s</span>`:''}
           <span>${esc(t.source||'')}</span>
         </div>
+        <div class="stat-chips">${chips.join('')}</div>
         ${!pass&&reasons?`<div class="reasons">${esc(reasons)}</div>`:''}
         <div class="token-actions">
           <button class="btn btn-ghost btn-sm" onclick="showAgents('${t.mint}')">Agents</button>
+          <button class="btn btn-gmgn btn-sm" onclick="openGmgn('${t.mint}')">GMGN</button>
           <button class="btn btn-primary btn-sm" ${pass?'':'disabled'} onclick="buy('${t.mint}')">Buy ${buySize.toFixed(2)}</button>
         </div>
       </div>`;
     }).join('');
+  }
+
+  function openGmgn(mint) {
+    // Full GMGN token page — best source for live dev/bundle/smart money UI
+    window.open('https://gmgn.ai/sol/token/' + mint, '_blank');
   }
 
   function renderPortfolio() {
@@ -464,7 +512,8 @@
             <div class="pos-sym">${esc(p.symbol)}</div>
             <div class="pos-det">${p.amount.toFixed(1)} tok · ${p.totalCostSol.toFixed(3)} SOL</div>
           </div>
-          <div style="display:flex;gap:6px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-gmgn btn-sm" onclick="openGmgn('${p.mint}')">GMGN</button>
             <button class="btn btn-danger btn-sm" onclick="sell('${p.mint}',50)">50%</button>
             <button class="btn btn-danger btn-sm" onclick="sell('${p.mint}',100)">100%</button>
           </div>
@@ -542,36 +591,69 @@
     toast(`Sold ${pct}% of ${pos.symbol}`);
   }
 
-  function showAgents(mint) {
+  async function showAgents(mint) {
     const t = tokens.find(x => x.mint === mint) || { mint };
+    // Live enrich if missing check
+    if (!t.check) {
+      document.getElementById('sheetContent').innerHTML = '<div class="loading">Running Risk Officer…</div>';
+      document.getElementById('sheet').classList.add('show');
+      try {
+        const c = await fetch(`https://pumpdata.fun/check/${mint}.json`).then(r => r.json());
+        applyCheck(t, c);
+        t.ruleCheck = riskCheck(t);
+      } catch (e) {}
+    }
     const check = riskCheck(t);
     const age = t.ageMinutes != null ? t.ageMinutes.toFixed(0) + 'm' : 'unknown';
     let html = `<h3 style="font-family:var(--mono);margin-bottom:8px">${esc(t.symbol||mint.slice(0,8))}</h3>
-      <p style="font-size:0.75rem;color:var(--muted);word-break:break-all;margin-bottom:14px">${esc(mint)}</p>`;
+      <p style="font-size:0.75rem;color:var(--muted);word-break:break-all;margin-bottom:10px">${esc(mint)}</p>
+      <button class="btn btn-gmgn btn-block" style="margin-bottom:14px" onclick="openGmgn('${mint}')">Open full stats on GMGN</button>`;
+
+    // Summary chips
+    const chips = [];
+    if (t.deployer_launches_before != null) chips.push(`Dev launches: ${t.deployer_launches_before}`);
+    if (t.deployer_graduations_before != null) chips.push(`Graduations: ${t.deployer_graduations_before}`);
+    if (t.bundlerHoldingsPct != null) chips.push(`Bundle: ${Number(t.bundlerHoldingsPct).toFixed(1)}%`);
+    if (t.rules_say) chips.push(`rules_say: ${t.rules_say}`);
+    flagNames(t).forEach(f => chips.push(f));
+    if (chips.length) {
+      html += `<div class="stat-chips" style="margin-bottom:12px">${chips.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`;
+    }
+
     html += agentBlock('Research', [
-      t.deployer_launches_before != null ? `Deployer: ${t.deployer_launches_before} launches, ${t.deployer_graduations_before||0} grads` : 'No deployer history yet',
-      t.flags ? Object.keys(t.flags).filter(k=>t.flags[k]).map(k=>'Flag: '+k).join(', ') : null
+      t.deployer_launches_before != null
+        ? `Deployer: ${t.deployer_launches_before} launches, ${t.deployer_graduations_before||0} grads`
+        : 'No deployer history yet',
+      ...(t.answer || []).slice(0, 2)
     ].filter(Boolean));
+
     html += agentBlock('Momentum', [
       `Age: ${age}`,
-      t.buyers_first_10s ? `${t.buyers_first_10s} buyers in first 10s` : null
+      t.buyers_first_10s != null ? `${t.buyers_first_10s} buyers in first 10s` : null
     ].filter(Boolean));
+
     html += agentBlock('Event', [
       t.graduated ? 'Already graduated' : 'Still on curve',
       t.source === 'live' ? 'Live recorder (very fresh)' : null
     ].filter(Boolean));
+
     html += agentBlock('Portfolio Manager', [
       `Suggested size: ${Math.min(0.25, Math.max(0.05, portfolio.balance * 0.05)).toFixed(3)} SOL`
     ]);
+
     html += agentBlock('Risk Officer', check.pass
-      ? ['Passed all hard rules']
+      ? ['Passed hard rules']
       : check.reasons);
+
     html += agentBlock('Reviewer', [
-      check.pass ? 'Eligible for paper trade' : 'Blocked — do not buy'
+      check.pass ? 'Eligible for paper trade' : 'Blocked — do not buy',
+      'For full GMGN holder/bundler/smart-money breakdown, use the GMGN button'
     ]);
+
     document.getElementById('sheetContent').innerHTML = html;
     document.getElementById('sheet').classList.add('show');
   }
+
   function agentBlock(name, notes) {
     return `<div class="agent"><strong>${name}</strong><p>${notes.map(esc).join('<br>')}</p></div>`;
   }
@@ -581,7 +663,6 @@
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Nav
   document.querySelectorAll('.nav button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
