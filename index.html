@@ -229,7 +229,13 @@
           <div class="stat-val" id="equity">5.0000 <span class="unit">SOL</span></div>
         </div>
       </div>
-      <button class="btn btn-ghost btn-block" id="resetBtn" style="margin-top:12px">Reset to 5 SOL</button>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-block" id="exportBtn" style="margin-top:0">Export backup</button>
+        <button class="btn btn-ghost btn-block" id="importBtn" style="margin-top:0">Import backup</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none" />
+        <button class="btn btn-ghost btn-block" id="resetBtn" style="margin-top:0">Reset to 5 SOL</button>
+      </div>
+      <p class="note">Export saves open positions + full history as a JSON file. You can keep it in Files or upload it to your GitHub repo as a backup. Import restores it.</p>
     </div>
     <div class="card">
       <h2>Open Positions</h2>
@@ -327,9 +333,11 @@
 
   <script>
   const START = 5;
-  const KEY = 'novabot_portfolio_v2';
+  const KEY = 'novabot_portfolio_v3';
   const RULES_KEY = 'novabot_rules_v1';
   const FILTERS_KEY = 'novabot_filters_v1';
+  const IDB_NAME = 'NovaBotDB';
+  const IDB_STORE = 'kv';
 
   const DEFAULT_RULES = {
     devEnabled: true, devMaxPct: 10,
@@ -343,19 +351,95 @@
 
   let rules = loadRules();
   let filters = loadFilters();
-  let portfolio = loadPortfolio();
+  let portfolio = loadPortfolioSync();
   let tokens = [];
   let buySize = 0.1;
   let maxAgeMin = filters.maxAge || 45;
 
-  function loadPortfolio() {
+  function defaultPortfolio() {
+    return { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+  }
+
+  function loadPortfolioSync() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p && typeof p.balance === 'number') {
+          p.positions = p.positions || {};
+          p.trades = Array.isArray(p.trades) ? p.trades : [];
+          return p;
+        }
+      }
     } catch (e) {}
-    return { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString() };
+    return defaultPortfolio();
   }
-  function savePortfolio() { localStorage.setItem(KEY, JSON.stringify(portfolio)); }
+
+  function openIdb() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(IDB_NAME, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbSet(key, value) {
+    try {
+      const db = await openIdb();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch (e) {}
+  }
+
+  async function idbGet(key) {
+    try {
+      const db = await openIdb();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(IDB_STORE, 'readonly');
+        const req = tx.objectStore(IDB_STORE).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function savePortfolio() {
+    portfolio.updatedAt = new Date().toISOString();
+    try {
+      localStorage.setItem(KEY, JSON.stringify(portfolio));
+    } catch (e) {
+      console.warn('localStorage save failed', e);
+    }
+    // Fire-and-forget durable backup
+    idbSet(KEY, portfolio);
+  }
+
+  async function hydratePortfolioFromIdb() {
+    try {
+      const fromIdb = await idbGet(KEY);
+      if (!fromIdb || typeof fromIdb.balance !== 'number') return;
+      const localUpdated = portfolio.updatedAt ? Date.parse(portfolio.updatedAt) : 0;
+      const idbUpdated = fromIdb.updatedAt ? Date.parse(fromIdb.updatedAt) : 0;
+      // Prefer newer copy
+      if (idbUpdated > localUpdated || (!portfolio.trades?.length && fromIdb.trades?.length)) {
+        portfolio = fromIdb;
+        portfolio.positions = portfolio.positions || {};
+        portfolio.trades = Array.isArray(portfolio.trades) ? portfolio.trades : [];
+        try { localStorage.setItem(KEY, JSON.stringify(portfolio)); } catch (e) {}
+        renderPortfolio();
+      }
+    } catch (e) {}
+  }
 
   function loadRules() {
     try {
@@ -364,7 +448,10 @@
     } catch (e) {}
     return { ...DEFAULT_RULES };
   }
-  function saveRulesObj() { localStorage.setItem(RULES_KEY, JSON.stringify(rules)); }
+  function saveRulesObj() {
+    try { localStorage.setItem(RULES_KEY, JSON.stringify(rules)); } catch (e) {}
+    idbSet(RULES_KEY, rules);
+  }
 
   function loadFilters() {
     try {
@@ -375,10 +462,19 @@
   }
   function saveFilters() {
     filters.maxAge = maxAgeMin;
-    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+    try { localStorage.setItem(FILTERS_KEY, JSON.stringify(filters)); } catch (e) {}
   }
 
+  // Persist when app is backgrounded / closed (critical on iOS)
+  function flushSave() { savePortfolio(); }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushSave();
+  });
+  window.addEventListener('pagehide', flushSave);
+  window.addEventListener('beforeunload', flushSave);
+
   function toast(msg) {
+
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
@@ -856,9 +952,93 @@
   });
 
   document.getElementById('refreshBtn').addEventListener('click', fetchLaunches);
+  function buildBackup() {
+    return {
+      version: 3,
+      exportedAt: new Date().toISOString(),
+      app: 'NovaBot',
+      portfolio: {
+        balance: portfolio.balance,
+        positions: portfolio.positions,
+        trades: portfolio.trades,
+        createdAt: portfolio.createdAt,
+        updatedAt: portfolio.updatedAt || new Date().toISOString()
+      },
+      rules: rules,
+      filters: filters
+    };
+  }
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    savePortfolio();
+    const backup = buildBackup();
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const name = 'novabot-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    // Also copy for easy paste into GitHub
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(json).then(() => {
+        toast('Backup downloaded + copied to clipboard');
+      }).catch(() => toast('Backup downloaded'));
+    } else {
+      toast('Backup downloaded');
+    }
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+  });
+
+  document.getElementById('importFile').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const p = data.portfolio || data;
+      if (typeof p.balance !== 'number') throw new Error('Invalid backup: missing balance');
+      if (!confirm('Replace current portfolio with this backup?')) return;
+      portfolio = {
+        balance: p.balance,
+        positions: p.positions || {},
+        trades: Array.isArray(p.trades) ? p.trades : [],
+        createdAt: p.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      if (data.rules && typeof data.rules === 'object') {
+        rules = { ...DEFAULT_RULES, ...data.rules };
+        saveRulesObj();
+        fillRulesUI();
+      }
+      if (data.filters && typeof data.filters === 'object') {
+        filters = { ...filters, ...data.filters };
+        maxAgeMin = filters.maxAge || maxAgeMin;
+        saveFilters();
+        syncFilterChips();
+      }
+      savePortfolio();
+      renderPortfolio();
+      tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
+      renderTokens();
+      toast('Backup restored');
+    } catch (err) {
+      toast('Import failed: ' + (err.message || 'bad file'));
+    }
+  });
+
   document.getElementById('resetBtn').addEventListener('click', () => {
     if (!confirm('Reset portfolio to 5 SOL?')) return;
-    portfolio = { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString() };
+    portfolio = defaultPortfolio();
     savePortfolio();
     renderPortfolio();
     toast('Portfolio reset');
@@ -870,6 +1050,7 @@
   fillRulesUI();
   syncFilterChips();
   renderPortfolio();
+  hydratePortfolioFromIdb().then(() => renderPortfolio());
   fetchLaunches();
   </script>
 </body>
