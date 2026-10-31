@@ -1037,6 +1037,14 @@
       .replace(/\/sync\/?$/i, '');
   }
 
+  function syncUrl(cfg, path) {
+    const base = cleanWorkerBase(cfg.workerUrl);
+    const p = path || '/';
+    const u = new URL(base + (p.startsWith('/') ? p : '/' + p));
+    u.searchParams.set('secret', cfg.secret);
+    return u.toString();
+  }
+
   async function syncToGitHub() {
     const cfg = loadSyncConfig();
     cfg.workerUrl = cleanWorkerBase(cfg.workerUrl);
@@ -1048,38 +1056,36 @@
     savePortfolio();
     toast('Syncing to GitHub…');
     const body = JSON.stringify(buildBackup());
-    // Prefer POST to worker root (v4 worker accepts write on any path)
-    const urls = [cfg.workerUrl + '/', cfg.workerUrl + '/portfolio', cfg.workerUrl];
+    const urls = [syncUrl(cfg, '/'), syncUrl(cfg, '/portfolio')];
     let lastErr = null;
     try {
       for (const url of urls) {
-        let res;
+        let res, raw;
         try {
           res = await fetch(url, {
             method: 'POST',
-            headers: syncHeaders(cfg),
+            headers: { 'Content-Type': 'text/plain' },
             body,
             mode: 'cors',
             cache: 'no-store'
           });
+          raw = await res.text();
         } catch (netErr) {
           lastErr = 'Network: ' + (netErr.message || 'failed');
           continue;
         }
-        const data = await res.json().catch(() => ({}));
+        let data = {};
+        try { data = JSON.parse(raw); } catch (e) {}
         if (res.ok && data.ok) {
           toast('Synced to GitHub ✓');
           updateSyncStatus();
           return;
         }
         if (res.status === 401) {
-          throw new Error('Unauthorized — SYNC_SECRET does not match Cloudflare');
+          throw new Error('Unauthorized — SYNC_SECRET does not match');
         }
-        const detail = data.detail?.message || data.detail?.documentation_url || '';
-        lastErr = (data.error || ('HTTP ' + res.status)) + (detail ? ' · ' + detail : '');
-        // 405 on one URL — try next
-        if (res.status === 405) continue;
-        if (res.status === 404) continue;
+        lastErr = data.error || ('HTTP ' + res.status + (raw ? ': ' + raw.slice(0, 80) : ''));
+        if (res.status === 405 || res.status === 404) continue;
         break;
       }
       throw new Error(lastErr || 'Sync failed');
@@ -1097,13 +1103,7 @@
       const res = await fetch(cfg.workerUrl + '/', { method: 'GET', cache: 'no-store', mode: 'cors' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      const parts = [
-        'Worker OK v' + (data.version || '?'),
-        data.hasSecret ? 'secret:set' : 'secret:MISSING',
-        data.hasToken ? 'token:set' : 'token:MISSING',
-        data.hasRepo ? 'repo:set' : 'repo:MISSING'
-      ];
-      toast(parts.join(' · '));
+      toast(['Worker OK v' + (data.version || '?'), data.hasSecret ? 'secret:set' : 'secret:MISSING', data.hasToken ? 'token:set' : 'token:MISSING', data.hasRepo ? 'repo:set' : 'repo:MISSING'].join(' · '));
     } catch (e) {
       toast('Test failed: ' + (e.message || 'network'));
     }
@@ -1119,15 +1119,15 @@
     saveSyncConfig(cfg);
     toast('Loading from GitHub…');
     try {
-      const res = await fetch(cfg.workerUrl + '/portfolio', {
+      const res = await fetch(syncUrl(cfg, '/portfolio'), {
         method: 'GET',
-        headers: syncHeaders(cfg),
         mode: 'cors',
         cache: 'no-store'
       });
       const data = await res.json().catch(() => ({}));
       if (res.status === 401) throw new Error('Unauthorized — check SYNC_SECRET');
       if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+
       if (!data.exists || !data.portfolio) {
         toast('No portfolio file on GitHub yet — Sync first');
         return;
