@@ -29,11 +29,19 @@
       --green: #059669; --red: #dc2626; --orange: #d97706; --purple: #7c3aed;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; }
+    html {
+      height: 100%;
+    }
     body {
       font-family: var(--font); background: var(--bg); color: var(--text);
-      line-height: 1.45; overscroll-behavior: none;
-      padding-top: var(--safe-top); padding-bottom: calc(64px + var(--safe-bottom));
+      line-height: 1.45;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-top: var(--safe-top);
+      /* Extra space so last cards clear the fixed bottom nav */
+      padding-bottom: calc(96px + var(--safe-bottom));
     }
     .top {
       position: sticky; top: 0; z-index: 50;
@@ -65,12 +73,12 @@
     }
     .nav button {
       flex: 1; background: none; border: none; color: var(--muted);
-      font-size: 0.68rem; padding: 6px 2px; display: flex; flex-direction: column;
-      align-items: center; gap: 3px; font-weight: 500;
+      font-size: 0.6rem; padding: 6px 1px; display: flex; flex-direction: column;
+      align-items: center; gap: 2px; font-weight: 500; min-width: 0;
     }
     .nav button.active { color: var(--accent); }
     .nav .ico { font-size: 1.2rem; }
-    .screen { display: none; padding: 14px 16px 24px; }
+    .screen { display: none; padding: 14px 16px 32px; }
     .screen.active { display: block; }
     .card {
       background: var(--card); border: 1px solid var(--border);
@@ -229,21 +237,33 @@
           <div class="stat-val" id="equity">5.0000 <span class="unit">SOL</span></div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
-        <button class="btn btn-primary btn-block" id="syncUpBtn" style="margin-top:0">Sync to GitHub</button>
-        <button class="btn btn-ghost btn-block" id="syncDownBtn" style="margin-top:0">Restore from GitHub</button>
-        <button class="btn btn-ghost btn-block" id="syncSetupBtn" style="margin-top:0">Cloud sync setup</button>
-        <button class="btn btn-ghost btn-block" id="exportBtn" style="margin-top:0">Export backup</button>
-        <button class="btn btn-ghost btn-block" id="importBtn" style="margin-top:0">Import backup</button>
-        <input type="file" id="importFile" accept="application/json,.json" style="display:none" />
-        <button class="btn btn-ghost btn-block" id="resetBtn" style="margin-top:0">Reset to 5 SOL</button>
-      </div>
-      <p class="note" id="syncStatus">Cloud sync: not configured. Tap Cloud sync setup.</p>
-      <p class="note">Export/Import still work offline. GitHub sync uses your Cloudflare Worker (token never stored in the app).</p>
+      <button class="btn btn-ghost btn-block" id="resetBtn" style="margin-top:12px">Reset to 5 SOL</button>
     </div>
     <div class="card">
       <h2>Open Positions</h2>
       <div id="positions"></div>
+    </div>
+  </section>
+
+  <section id="screen-sync" class="screen">
+    <div class="card">
+      <h2>Cloud sync</h2>
+      <p class="note" id="syncStatus" style="margin-top:0;margin-bottom:12px">Cloud sync: not configured. Tap Cloud sync setup.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary btn-block" id="syncUpBtn" style="margin-top:0">Sync to GitHub</button>
+        <button class="btn btn-ghost btn-block" id="syncDownBtn" style="margin-top:0">Restore from GitHub</button>
+        <button class="btn btn-ghost btn-block" id="syncSetupBtn" style="margin-top:0">Cloud sync setup</button>
+      </div>
+      <p class="note">Uses your Cloudflare Worker. GitHub token stays on the server, not in this app.</p>
+    </div>
+    <div class="card">
+      <h2>Local backup</h2>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-ghost btn-block" id="exportBtn" style="margin-top:0">Export backup</button>
+        <button class="btn btn-ghost btn-block" id="importBtn" style="margin-top:0">Import backup</button>
+        <input type="file" id="importFile" accept="application/json,.json" style="display:none" />
+      </div>
+      <p class="note">Save a JSON file to Files, or import one later. Works offline.</p>
     </div>
   </section>
 
@@ -323,6 +343,7 @@
   <nav class="nav">
     <button class="active" data-screen="home"><span class="ico">💼</span>Portfolio</button>
     <button data-screen="scan"><span class="ico">📡</span>Scanner</button>
+    <button data-screen="sync"><span class="ico">☁️</span>Sync</button>
     <button data-screen="rules"><span class="ico">⚙️</span>Rules</button>
     <button data-screen="history"><span class="ico">📜</span>History</button>
   </nav>
