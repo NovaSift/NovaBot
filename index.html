@@ -106,9 +106,7 @@
     .toggle-row:last-child { border-bottom: none; }
     .toggle-label { font-size: 0.85rem; flex: 1; }
     .toggle-label small { display: block; color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
-    .switch {
-      position: relative; width: 48px; height: 28px; flex-shrink: 0;
-    }
+    .switch { position: relative; width: 48px; height: 28px; flex-shrink: 0; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute; cursor: pointer; inset: 0; background: var(--border);
@@ -133,8 +131,9 @@
       padding: 12px; margin-bottom: 10px;
     }
     .token-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .sym { font-family: var(--mono); font-weight: 700; font-size: 0.95rem; }
-    .mint { font-size: 0.7rem; color: var(--muted); word-break: break-all; margin-top: 2px; }
+    .sym { font-family: var(--mono); font-weight: 700; font-size: 1rem; }
+    .coin-name { font-size: 0.85rem; color: var(--text); margin-top: 2px; font-weight: 500; }
+    .mint { font-size: 0.68rem; color: var(--muted); word-break: break-all; margin-top: 3px; font-family: var(--mono); }
     .meta {
       display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 8px;
       font-size: 0.72rem; color: var(--muted); font-family: var(--mono);
@@ -161,9 +160,10 @@
       background: var(--elev); border-radius: 10px; padding: 12px; margin-bottom: 8px;
       display: flex; justify-content: space-between; align-items: center; gap: 10px;
     }
-    .pos-info { min-width: 0; }
-    .pos-sym { font-weight: 600; font-family: var(--mono); }
-    .pos-det { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+    .pos-info { min-width: 0; flex: 1; }
+    .pos-sym { font-weight: 700; font-family: var(--mono); font-size: 0.95rem; }
+    .pos-name { font-size: 0.8rem; color: var(--text); margin-top: 1px; }
+    .pos-det { font-size: 0.72rem; color: var(--muted); font-family: var(--mono); margin-top: 3px; }
     .side { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
     .side.buy { background: color-mix(in srgb, var(--green) 18%, transparent); color: var(--green); }
     .side.sell { background: color-mix(in srgb, var(--red) 18%, transparent); color: var(--red); }
@@ -208,7 +208,6 @@
     <button class="icon-btn" id="themeBtn" aria-label="Theme">🌙</button>
   </header>
 
-  <!-- Portfolio -->
   <section id="screen-home" class="screen active">
     <div class="card">
       <h2>Portfolio</h2>
@@ -238,7 +237,6 @@
     </div>
   </section>
 
-  <!-- Scanner -->
   <section id="screen-scan" class="screen">
     <div class="card">
       <h2>Scanner filters</h2>
@@ -258,67 +256,53 @@
         <span id="sizeVal">0.10</span>
       </div>
       <button class="btn btn-ghost btn-block" id="refreshBtn">Refresh launches</button>
-      <p class="note">Most new launches fail Risk Officer (serial devs, bundles). Filters hide the noise so you only see tradable candidates.</p>
+      <p class="note">Most new launches fail Risk Officer. Filters hide noise so you only see tradable candidates.</p>
     </div>
     <div class="count-bar" id="countBar"></div>
     <div id="tokenList"><div class="loading">Loading…</div></div>
   </section>
 
-  <!-- Rules (editable) -->
   <section id="screen-rules" class="screen">
     <div class="card">
       <h2>Edit Risk Officer rules</h2>
       <p class="note" style="margin-top:0;margin-bottom:12px">Toggle rules and change thresholds. Saved on this phone automatically.</p>
-
       <div class="toggle-row">
         <div class="toggle-label">1. Dev holdings limit<small>Skip if dev holds more than threshold</small>
           <div class="thresh">Max % <input type="number" id="rDevPct" min="0" max="100" step="1" /></div>
         </div>
         <label class="switch"><input type="checkbox" id="rDev" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">2. Bundler holdings limit<small>Skip if early bundlers hold more than threshold</small>
           <div class="thresh">Max % <input type="number" id="rBundPct" min="0" max="100" step="1" /></div>
         </div>
         <label class="switch"><input type="checkbox" id="rBund" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">3. Serial / known rug wallet<small>Skip serial launchers &amp; rug patterns</small></div>
         <label class="switch"><input type="checkbox" id="rSerial" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">3b. Respect pumpdata rules_say<small>Skip when pumpdata says skip</small></div>
         <label class="switch"><input type="checkbox" id="rPumpSkip" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">4. Dev sells → exit<small>Shown for open positions (manual for now)</small></div>
         <label class="switch"><input type="checkbox" id="rDevSell" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">5. Graduation → sell 100%<small>Shown for open positions (manual for now)</small></div>
         <label class="switch"><input type="checkbox" id="rGrad" /><span class="slider"></span></label>
       </div>
-
       <div class="toggle-row">
         <div class="toggle-label">6. Duplicate ticker<small>Skip when same ticker is heavily reused</small></div>
         <label class="switch"><input type="checkbox" id="rDup" /><span class="slider"></span></label>
       </div>
-
       <button class="btn btn-primary btn-block" id="saveRulesBtn">Save rules</button>
       <button class="btn btn-ghost btn-block" id="resetRulesBtn">Reset to defaults</button>
     </div>
-    <div class="card">
-      <h2>Agent team</h2>
-      <p class="note" style="margin:0">Research · Momentum · Event · Portfolio Manager · Risk Officer · Reviewer — Risk Officer uses the rules above.</p>
-    </div>
   </section>
 
-  <!-- History -->
   <section id="screen-history" class="screen">
     <div class="card">
       <h2>Trade History</h2>
@@ -380,9 +364,7 @@
     } catch (e) {}
     return { ...DEFAULT_RULES };
   }
-  function saveRulesObj() {
-    localStorage.setItem(RULES_KEY, JSON.stringify(rules));
-  }
+  function saveRulesObj() { localStorage.setItem(RULES_KEY, JSON.stringify(rules)); }
 
   function loadFilters() {
     try {
@@ -447,19 +429,35 @@
     t.rules_say = c.rules_say;
     t.answer = c.answer;
     t.questions = c.questions;
-    if (Array.isArray(c.flags)) {
-      t.flags = c.flags;
-    } else {
-      t.flags = c.flags || {};
-    }
+    t.flags = Array.isArray(c.flags) ? c.flags : (c.flags || {});
     if (hasFlag(t, 'serial_launcher')) t.isKnownRugWallet = true;
-    if (hasFlag(t, 'early_concentration') && t.bundlerHoldingsPct == null) {
-      t.bundlerHoldingsPct = 30;
-    }
+    if (hasFlag(t, 'early_concentration') && t.bundlerHoldingsPct == null) t.bundlerHoldingsPct = 30;
     const q = (c.questions || []).find(x => /ticker|real \$/i.test(x.q || ''));
-    if (q && /other graduated|launched \d+ times/i.test(q.a || '')) {
-      t.hasDuplicateTicker = true;
+    if (q && /other graduated|launched \d+ times/i.test(q.a || '')) t.hasDuplicateTicker = true;
+  }
+
+  async function fetchMeta(mint) {
+    try {
+      const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + mint);
+      const data = await res.json();
+      const pair = (data.pairs || [])[0];
+      if (!pair || !pair.baseToken) return null;
+      return {
+        symbol: pair.baseToken.symbol || null,
+        name: pair.baseToken.name || null,
+        priceSol: pair.priceNative ? Number(pair.priceNative) : null,
+        priceUsd: pair.priceUsd ? Number(pair.priceUsd) : null
+      };
+    } catch (e) {
+      return null;
     }
+  }
+
+  function formatPrice(p) {
+    if (p == null || !Number.isFinite(p)) return '—';
+    if (p >= 0.01) return p.toFixed(4);
+    if (p >= 0.000001) return p.toFixed(8);
+    return p.toExponential(2);
   }
 
   async function fetchLaunches() {
@@ -479,7 +477,8 @@
           : null;
         const t = {
           mint: o.mint,
-          symbol: (o.mint || '').slice(0, 6).toUpperCase(),
+          symbol: null,
+          name: null,
           creator: o.creator,
           created: o.created,
           ageMinutes: age,
@@ -488,31 +487,50 @@
           buyers_first_10s: o.buyers_first_10s,
           bundlerHoldingsPct: bundlePct,
           graduated: !!o.migrated_at,
-          source: o.source
+          source: o.source,
+          priceSol: null
         };
-        // Pre-filter serial from launch list (dev with many prior launches)
-        if (t.deployer_launches_before != null && t.deployer_launches_before >= 15) {
-          t.isKnownRugWallet = true;
-        }
+        if (t.deployer_launches_before != null && t.deployer_launches_before >= 15) t.isKnownRugWallet = true;
         t.ruleCheck = riskCheck(t);
         return t;
       });
 
-      // Enrich a batch that might pass (young, not obvious serial)
       const candidates = tokens.filter(t =>
         (t.ageMinutes == null || t.ageMinutes <= maxAgeMin) &&
         !(t.deployer_launches_before >= 30)
-      ).slice(0, 10);
+      ).slice(0, 12);
 
       for (const t of candidates) {
         try {
-          const c = await fetch(`https://pumpdata.fun/check/${t.mint}.json`).then(r => r.json());
-          applyCheck(t, c);
+          const [c, meta] = await Promise.all([
+            fetch(`https://pumpdata.fun/check/${t.mint}.json`).then(r => r.json()).catch(() => null),
+            fetchMeta(t.mint)
+          ]);
+          if (c) applyCheck(t, c);
+          if (meta) {
+            if (meta.symbol) t.symbol = meta.symbol;
+            if (meta.name) t.name = meta.name;
+            if (meta.priceSol != null) t.priceSol = meta.priceSol;
+          }
           t.ruleCheck = riskCheck(t);
         } catch (e) {}
       }
-      // Re-check all
-      tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
+
+      // Also fetch names for top filtered list items without meta yet
+      const needMeta = filteredTokens().filter(t => !t.symbol).slice(0, 8);
+      for (const t of needMeta) {
+        const meta = await fetchMeta(t.mint);
+        if (meta) {
+          if (meta.symbol) t.symbol = meta.symbol;
+          if (meta.name) t.name = meta.name;
+          if (meta.priceSol != null) t.priceSol = meta.priceSol;
+        }
+      }
+
+      tokens.forEach(t => {
+        if (!t.symbol) t.symbol = (t.mint || '').slice(0, 6).toUpperCase();
+        t.ruleCheck = riskCheck(t);
+      });
       renderTokens();
     } catch (e) {
       el.innerHTML = `<div class="empty">Could not load launches.<br>${esc(e.message)}</div>`;
@@ -529,6 +547,13 @@
     });
   }
 
+  function displaySymbol(t) {
+    return t.symbol || (t.mint || '').slice(0, 6).toUpperCase();
+  }
+  function displayName(t) {
+    return t.name || '';
+  }
+
   function renderTokens() {
     const el = document.getElementById('tokenList');
     const list = filteredTokens();
@@ -540,7 +565,7 @@
       el.innerHTML = `<div class="empty">
         No coins match your filters right now.<br><br>
         <strong>Why?</strong> Most pump launches are serial-dev spam.<br><br>
-        Try: turn off “Pass only”, raise Max age, or loosen rules in the Rules tab — then Refresh.
+        Try: turn off “Pass only”, raise Max age, or loosen rules — then Refresh.
       </div>`;
       return;
     }
@@ -558,14 +583,20 @@
         const cls = b > rules.bundMaxPct ? 'bad' : (b > 10 ? 'warn' : 'good');
         chips.push(`<span class="chip ${cls}">bundle ${b.toFixed(0)}%</span>`);
       }
+      if (t.priceSol != null) chips.push(`<span class="chip">${formatPrice(t.priceSol)} SOL</span>`);
       if (t.rules_say) chips.push(`<span class="chip ${t.rules_say==='skip'?'bad':'good'}">rules: ${esc(t.rules_say)}</span>`);
       flagNames(t).forEach(f => chips.push(`<span class="chip bad">${esc(f)}</span>`));
+
+      const nameLine = displayName(t)
+        ? `<div class="coin-name">${esc(displayName(t))}</div>`
+        : '';
 
       return `<div class="token">
         <div class="token-top">
           <div>
-            <div class="sym">${esc(t.symbol)}</div>
-            <div class="mint">${esc((t.mint||'').slice(0,18))}…</div>
+            <div class="sym">$${esc(displaySymbol(t))}</div>
+            ${nameLine}
+            <div class="mint">${esc((t.mint||'').slice(0, 20))}…</div>
           </div>
           <span class="badge-r ${pass?'pass':'fail'}">${pass?'Pass':'Blocked'}</span>
         </div>
@@ -599,18 +630,24 @@
     const list = Object.values(portfolio.positions);
     if (!list.length) pel.innerHTML = '<div class="empty">No open positions</div>';
     else {
-      pel.innerHTML = list.map(p => `
+      pel.innerHTML = list.map(p => {
+        const entry = p.avgEntrySol != null ? formatPrice(p.avgEntrySol) : '—';
+        const nameLine = p.name ? `<div class="pos-name">${esc(p.name)}</div>` : '';
+        return `
         <div class="pos-row">
           <div class="pos-info">
-            <div class="pos-sym">${esc(p.symbol)}</div>
-            <div class="pos-det">${p.amount.toFixed(1)} tok · ${p.totalCostSol.toFixed(3)} SOL</div>
+            <div class="pos-sym">$${esc(p.symbol || '???')}</div>
+            ${nameLine}
+            <div class="pos-det">Entry ${entry} SOL · ${p.amount.toFixed(1)} tok</div>
+            <div class="pos-det">Cost ${p.totalCostSol.toFixed(4)} SOL</div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn btn-gmgn btn-sm" onclick="openGmgn('${p.mint}')">GMGN</button>
             <button class="btn btn-danger btn-sm" onclick="sell('${p.mint}',50)">50%</button>
             <button class="btn btn-danger btn-sm" onclick="sell('${p.mint}',100)">100%</button>
           </div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     }
 
     const tel = document.getElementById('trades');
@@ -621,9 +658,9 @@
           <div class="pos-info">
             <div style="display:flex;align-items:center;gap:6px">
               <span class="side ${t.side}">${t.side}</span>
-              <span class="pos-sym">${esc(t.symbol)}</span>
+              <span class="pos-sym">$${esc(t.symbol)}</span>
             </div>
-            <div class="pos-det">${t.amountSol.toFixed(3)} SOL · ${new Date(t.time).toLocaleString()}</div>
+            <div class="pos-det">${t.amountSol.toFixed(3)} SOL @ ${formatPrice(t.priceSol)} · ${new Date(t.time).toLocaleString()}</div>
           </div>
         </div>`).join('');
     }
@@ -634,16 +671,24 @@
     const check = riskCheck(t);
     if (!check.pass) { toast('Blocked: ' + check.reasons.join(', ')); return; }
     if (buySize > portfolio.balance) { toast('Insufficient balance'); return; }
-    const price = 0.00001;
+
+    // Prefer live price from DexScreener when available
+    const price = (t.priceSol != null && t.priceSol > 0) ? t.priceSol : 0.00001;
     const tokensAmt = buySize / price;
     portfolio.balance -= buySize;
     if (!portfolio.positions[mint]) {
       portfolio.positions[mint] = {
-        mint, symbol: t.symbol || mint.slice(0,6).toUpperCase(),
-        amount: 0, avgEntrySol: 0, totalCostSol: 0
+        mint,
+        symbol: displaySymbol(t),
+        name: displayName(t) || null,
+        amount: 0,
+        avgEntrySol: 0,
+        totalCostSol: 0
       };
     }
     const pos = portfolio.positions[mint];
+    if (!pos.name && t.name) pos.name = t.name;
+    if (t.symbol) pos.symbol = t.symbol;
     const newCost = pos.totalCostSol + buySize;
     const newAmt = pos.amount + tokensAmt;
     pos.avgEntrySol = newCost / newAmt;
@@ -655,7 +700,7 @@
     });
     savePortfolio();
     renderPortfolio();
-    toast(`Bought ${buySize.toFixed(2)} SOL of ${pos.symbol}`);
+    toast(`Bought ${buySize.toFixed(2)} SOL of $${pos.symbol} @ ${formatPrice(price)}`);
   }
 
   function sell(mint, pct) {
@@ -663,35 +708,46 @@
     if (!pos) return;
     const frac = Math.min(100, Math.max(0, pct)) / 100;
     const tok = pos.amount * frac;
-    const sol = tok * (pos.avgEntrySol || 0.00001);
+    const price = pos.avgEntrySol || 0.00001;
+    const sol = tok * price;
     portfolio.balance += sol;
     pos.amount -= tok;
     pos.totalCostSol = pos.amount * pos.avgEntrySol;
     if (pos.amount < 1e-9) delete portfolio.positions[mint];
     portfolio.trades.unshift({
       id: Date.now().toString(), side: 'sell', mint, symbol: pos.symbol,
-      amountSol: sol, tokens: tok, percent: pct, time: new Date().toISOString()
+      amountSol: sol, tokens: tok, priceSol: price, percent: pct, time: new Date().toISOString()
     });
     savePortfolio();
     renderPortfolio();
-    toast(`Sold ${pct}% of ${pos.symbol}`);
+    toast(`Sold ${pct}% of $${pos.symbol}`);
   }
 
   async function showAgents(mint) {
     const t = tokens.find(x => x.mint === mint) || { mint };
     document.getElementById('sheetContent').innerHTML = '<div class="loading">Running agents…</div>';
     document.getElementById('sheet').classList.add('show');
-    if (!t.check) {
+    if (!t.check || !t.symbol) {
       try {
-        const c = await fetch(`https://pumpdata.fun/check/${mint}.json`).then(r => r.json());
-        applyCheck(t, c);
+        const [c, meta] = await Promise.all([
+          fetch(`https://pumpdata.fun/check/${mint}.json`).then(r => r.json()).catch(() => null),
+          fetchMeta(mint)
+        ]);
+        if (c) applyCheck(t, c);
+        if (meta) {
+          if (meta.symbol) t.symbol = meta.symbol;
+          if (meta.name) t.name = meta.name;
+          if (meta.priceSol != null) t.priceSol = meta.priceSol;
+        }
         t.ruleCheck = riskCheck(t);
       } catch (e) {}
     }
     const check = riskCheck(t);
     const age = t.ageMinutes != null ? t.ageMinutes.toFixed(0) + 'm' : 'unknown';
-    let html = `<h3 style="font-family:var(--mono);margin-bottom:8px">${esc(t.symbol||mint.slice(0,8))}</h3>
+    let html = `<h3 style="font-family:var(--mono);margin-bottom:4px">$${esc(displaySymbol(t))}</h3>
+      ${t.name ? `<p style="margin-bottom:6px">${esc(t.name)}</p>` : ''}
       <p style="font-size:0.75rem;color:var(--muted);word-break:break-all;margin-bottom:10px">${esc(mint)}</p>
+      ${t.priceSol != null ? `<p style="font-family:var(--mono);font-size:0.85rem;margin-bottom:10px">Price: ${formatPrice(t.priceSol)} SOL</p>` : ''}
       <button class="btn btn-gmgn btn-block" style="margin-bottom:14px" onclick="openGmgn('${mint}')">Open on GMGN</button>`;
     html += agentBlock('Research', [
       t.deployer_launches_before != null ? `Deployer: ${t.deployer_launches_before} launches, ${t.deployer_graduations_before||0} grads` : 'No deployer history yet',
@@ -705,14 +761,13 @@
     document.getElementById('sheetContent').innerHTML = html;
   }
   function agentBlock(name, notes) {
-    return `<div class="agent" style="background:var(--elev);border-radius:10px;padding:12px;margin-bottom:8px"><strong style="color:var(--accent)">${name}</strong><p style="font-size:0.75rem;color:var(--muted);margin-top:4px">${notes.map(esc).join('<br>')}</p></div>`;
+    return `<div style="background:var(--elev);border-radius:10px;padding:12px;margin-bottom:8px"><strong style="color:var(--accent)">${name}</strong><p style="font-size:0.75rem;color:var(--muted);margin-top:4px">${notes.map(esc).join('<br>')}</p></div>`;
   }
   function esc(s) {
     if (s == null) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  // Rules UI
   function fillRulesUI() {
     document.getElementById('rDev').checked = rules.devEnabled;
     document.getElementById('rDevPct').value = rules.devMaxPct;
@@ -735,8 +790,6 @@
     rules.gradEnabled = document.getElementById('rGrad').checked;
     rules.dupEnabled = document.getElementById('rDup').checked;
   }
-
-  // Filters UI
   function syncFilterChips() {
     document.getElementById('fPass').classList.toggle('on', !!filters.passOnly);
     document.getElementById('fSerial').classList.toggle('on', !!filters.hideSerial);
@@ -779,8 +832,7 @@
 
   document.querySelectorAll('.fchip').forEach(chip => {
     chip.addEventListener('click', () => {
-      const key = chip.dataset.filter;
-      filters[key] = !filters[key];
+      filters[chip.dataset.filter] = !filters[chip.dataset.filter];
       saveFilters();
       syncFilterChips();
       renderTokens();
