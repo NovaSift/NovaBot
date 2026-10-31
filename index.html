@@ -65,11 +65,11 @@
     }
     .nav button {
       flex: 1; background: none; border: none; color: var(--muted);
-      font-size: 0.7rem; padding: 6px; display: flex; flex-direction: column;
+      font-size: 0.68rem; padding: 6px 2px; display: flex; flex-direction: column;
       align-items: center; gap: 3px; font-weight: 500;
     }
     .nav button.active { color: var(--accent); }
-    .nav .ico { font-size: 1.25rem; }
+    .nav .ico { font-size: 1.2rem; }
     .screen { display: none; padding: 14px 16px 24px; }
     .screen.active { display: block; }
     .card {
@@ -82,12 +82,12 @@
     .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
     .stat-val { font-family: var(--mono); font-size: 1.15rem; font-weight: 600; margin-top: 2px; }
     .unit { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
-    .size-row {
-      display: flex; align-items: center; gap: 10px; margin: 12px 0 4px;
+    .size-row, .filter-row {
+      display: flex; align-items: center; gap: 10px; margin: 10px 0 4px;
       font-size: 0.85rem; color: var(--muted);
     }
-    .size-row input { flex: 1; accent-color: var(--accent); }
-    #sizeVal { font-family: var(--mono); color: var(--text); font-weight: 600; min-width: 40px; }
+    .size-row input[type="range"], .filter-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+    #sizeVal, #maxAgeVal { font-family: var(--mono); color: var(--text); font-weight: 600; min-width: 40px; }
     .btn {
       border: none; border-radius: 10px; padding: 10px 14px; font-size: 0.85rem;
       font-weight: 600; font-family: var(--font); cursor: pointer;
@@ -99,6 +99,35 @@
     .btn-gmgn { background: transparent; color: var(--green); border: 1px solid var(--green); }
     .btn-sm { padding: 7px 11px; font-size: 0.78rem; }
     .btn-block { width: 100%; margin-top: 8px; }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 0; border-bottom: 1px solid var(--border); gap: 12px;
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 0.85rem; flex: 1; }
+    .toggle-label small { display: block; color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+    .switch {
+      position: relative; width: 48px; height: 28px; flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0; background: var(--border);
+      border-radius: 28px; transition: 0.2s;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px;
+      background: white; border-radius: 50%; transition: 0.2s;
+    }
+    .switch input:checked + .slider { background: var(--accent); }
+    .switch input:checked + .slider:before { transform: translateX(20px); }
+    .thresh {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .thresh input {
+      width: 64px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--elev); color: var(--text); font-family: var(--mono); font-size: 0.85rem;
+    }
     .token {
       background: var(--elev); border: 1px solid var(--border); border-radius: 12px;
       padding: 12px; margin-bottom: 10px;
@@ -110,9 +139,7 @@
       display: flex; flex-wrap: wrap; gap: 6px 10px; margin-top: 8px;
       font-size: 0.72rem; color: var(--muted); font-family: var(--mono);
     }
-    .stat-chips {
-      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
-    }
+    .stat-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .chip {
       font-size: 0.68rem; font-family: var(--mono); padding: 3px 8px; border-radius: 6px;
       background: var(--card); border: 1px solid var(--border); color: var(--muted);
@@ -128,24 +155,7 @@
     .badge-r.fail { background: color-mix(in srgb, var(--red) 18%, transparent); color: var(--red); }
     .reasons { font-size: 0.72rem; color: var(--red); margin-top: 6px; line-height: 1.3; }
     .token-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .rules li {
-      list-style: none; font-size: 0.82rem; color: var(--muted);
-      padding: 8px 0; border-bottom: 1px solid var(--border);
-      display: flex; gap: 10px; align-items: center;
-    }
-    .rules li:last-child { border-bottom: none; }
-    .rn {
-      width: 22px; height: 22px; border-radius: 6px; background: var(--elev);
-      border: 1px solid var(--border); font-size: 0.7rem; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; color: var(--accent); flex-shrink: 0;
-    }
-    .rules strong { color: var(--text); }
-    .agent {
-      background: var(--elev); border-radius: 10px; padding: 12px; margin-bottom: 8px;
-    }
-    .agent strong { color: var(--accent); font-size: 0.85rem; }
-    .agent p { font-size: 0.75rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
-    .empty { text-align: center; color: var(--muted); padding: 28px 12px; font-size: 0.9rem; }
+    .empty { text-align: center; color: var(--muted); padding: 28px 12px; font-size: 0.9rem; line-height: 1.5; }
     .loading { text-align: center; color: var(--muted); padding: 20px; }
     .pos-row, .trade-row {
       background: var(--elev); border-radius: 10px; padding: 12px; margin-bottom: 8px;
@@ -178,9 +188,14 @@
       width: 36px; height: 4px; background: var(--border); border-radius: 2px;
       margin: 0 auto 16px;
     }
-    .note {
-      font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 8px;
+    .note { font-size: 0.75rem; color: var(--muted); line-height: 1.4; margin-top: 10px; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .fchip {
+      font-size: 0.75rem; font-weight: 600; padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--border); background: var(--elev); color: var(--muted);
     }
+    .fchip.on { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+    .count-bar { font-size: 0.75rem; color: var(--muted); margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -193,6 +208,7 @@
     <button class="icon-btn" id="themeBtn" aria-label="Theme">🌙</button>
   </header>
 
+  <!-- Portfolio -->
   <section id="screen-home" class="screen active">
     <div class="card">
       <h2>Portfolio</h2>
@@ -222,50 +238,87 @@
     </div>
   </section>
 
+  <!-- Scanner -->
   <section id="screen-scan" class="screen">
     <div class="card">
-      <h2>New Launches</h2>
-      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">
-        pumpdata.fun risk stats · GMGN deep links
-      </p>
+      <h2>Scanner filters</h2>
+      <div class="filter-chips">
+        <button type="button" class="fchip on" data-filter="passOnly" id="fPass">Pass only</button>
+        <button type="button" class="fchip on" data-filter="hideSerial" id="fSerial">Hide serial</button>
+        <button type="button" class="fchip" data-filter="hideGrad" id="fGrad">Hide graduated</button>
+      </div>
+      <div class="filter-row">
+        <span>Max age</span>
+        <input type="range" id="maxAgeSlider" min="5" max="120" step="5" value="45" />
+        <span id="maxAgeVal">45m</span>
+      </div>
       <div class="size-row">
         <span>Size</span>
         <input type="range" id="sizeSlider" min="0.05" max="0.5" step="0.05" value="0.1" />
         <span id="sizeVal">0.10</span>
       </div>
       <button class="btn btn-ghost btn-block" id="refreshBtn">Refresh launches</button>
+      <p class="note">Most new launches fail Risk Officer (serial devs, bundles). Filters hide the noise so you only see tradable candidates.</p>
     </div>
+    <div class="count-bar" id="countBar"></div>
     <div id="tokenList"><div class="loading">Loading…</div></div>
   </section>
 
+  <!-- Rules (editable) -->
   <section id="screen-rules" class="screen">
     <div class="card">
-      <h2>Risk Officer Rules</h2>
-      <ul class="rules">
-        <li><span class="rn">1</span> Dev holds &gt; 10% → <strong>Skip</strong></li>
-        <li><span class="rn">2</span> Bundlers hold &gt; 25% → <strong>Skip</strong></li>
-        <li><span class="rn">3</span> Known rug / serial wallet → <strong>Skip</strong></li>
-        <li><span class="rn">4</span> Dev sells → <strong>Exit</strong></li>
-        <li><span class="rn">5</span> Coin graduates → <strong>Sell 100%</strong></li>
-        <li><span class="rn">6</span> Duplicate ticker → <strong>Skip</strong></li>
-      </ul>
-      <p class="note">
-        Stats come from pumpdata.fun free checks (dev history, early bundle, serial flags).
-        Tap <strong>GMGN</strong> on any coin for full holder / bundler / smart-money view on gmgn.ai.
-        Official GMGN Agent API needs a free key + signing — planned for a future backend version.
-      </p>
+      <h2>Edit Risk Officer rules</h2>
+      <p class="note" style="margin-top:0;margin-bottom:12px">Toggle rules and change thresholds. Saved on this phone automatically.</p>
+
+      <div class="toggle-row">
+        <div class="toggle-label">1. Dev holdings limit<small>Skip if dev holds more than threshold</small>
+          <div class="thresh">Max % <input type="number" id="rDevPct" min="0" max="100" step="1" /></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="rDev" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">2. Bundler holdings limit<small>Skip if early bundlers hold more than threshold</small>
+          <div class="thresh">Max % <input type="number" id="rBundPct" min="0" max="100" step="1" /></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="rBund" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">3. Serial / known rug wallet<small>Skip serial launchers &amp; rug patterns</small></div>
+        <label class="switch"><input type="checkbox" id="rSerial" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">3b. Respect pumpdata rules_say<small>Skip when pumpdata says skip</small></div>
+        <label class="switch"><input type="checkbox" id="rPumpSkip" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">4. Dev sells → exit<small>Shown for open positions (manual for now)</small></div>
+        <label class="switch"><input type="checkbox" id="rDevSell" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">5. Graduation → sell 100%<small>Shown for open positions (manual for now)</small></div>
+        <label class="switch"><input type="checkbox" id="rGrad" /><span class="slider"></span></label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="toggle-label">6. Duplicate ticker<small>Skip when same ticker is heavily reused</small></div>
+        <label class="switch"><input type="checkbox" id="rDup" /><span class="slider"></span></label>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="saveRulesBtn">Save rules</button>
+      <button class="btn btn-ghost btn-block" id="resetRulesBtn">Reset to defaults</button>
     </div>
     <div class="card">
-      <h2>Agent Team</h2>
-      <div class="agent"><strong>Research</strong><p>Deployer history, similar launches, flags</p></div>
-      <div class="agent"><strong>Momentum</strong><p>Age, early buyers, short-term activity</p></div>
-      <div class="agent"><strong>Event</strong><p>Graduation & on-chain events</p></div>
-      <div class="agent"><strong>Portfolio Manager</strong><p>Position sizing from balance & risk</p></div>
-      <div class="agent"><strong>Risk Officer</strong><p>Enforces the 6 hard rules — veto power</p></div>
-      <div class="agent"><strong>Reviewer</strong><p>Final team synthesis</p></div>
+      <h2>Agent team</h2>
+      <p class="note" style="margin:0">Research · Momentum · Event · Portfolio Manager · Risk Officer · Reviewer — Risk Officer uses the rules above.</p>
     </div>
   </section>
 
+  <!-- History -->
   <section id="screen-history" class="screen">
     <div class="card">
       <h2>Trade History</h2>
@@ -276,7 +329,7 @@
   <nav class="nav">
     <button class="active" data-screen="home"><span class="ico">💼</span>Portfolio</button>
     <button data-screen="scan"><span class="ico">📡</span>Scanner</button>
-    <button data-screen="rules"><span class="ico">🛡️</span>Rules</button>
+    <button data-screen="rules"><span class="ico">⚙️</span>Rules</button>
     <button data-screen="history"><span class="ico">📜</span>History</button>
   </nav>
 
@@ -291,18 +344,57 @@
   <script>
   const START = 5;
   const KEY = 'novabot_portfolio_v2';
-  let portfolio = load();
+  const RULES_KEY = 'novabot_rules_v1';
+  const FILTERS_KEY = 'novabot_filters_v1';
+
+  const DEFAULT_RULES = {
+    devEnabled: true, devMaxPct: 10,
+    bundEnabled: true, bundMaxPct: 25,
+    serialEnabled: true,
+    pumpSkipEnabled: true,
+    devSellEnabled: true,
+    gradEnabled: true,
+    dupEnabled: true
+  };
+
+  let rules = loadRules();
+  let filters = loadFilters();
+  let portfolio = loadPortfolio();
   let tokens = [];
   let buySize = 0.1;
+  let maxAgeMin = filters.maxAge || 45;
 
-  function load() {
+  function loadPortfolio() {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) return JSON.parse(raw);
     } catch (e) {}
     return { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString() };
   }
-  function save() { localStorage.setItem(KEY, JSON.stringify(portfolio)); }
+  function savePortfolio() { localStorage.setItem(KEY, JSON.stringify(portfolio)); }
+
+  function loadRules() {
+    try {
+      const raw = localStorage.getItem(RULES_KEY);
+      if (raw) return { ...DEFAULT_RULES, ...JSON.parse(raw) };
+    } catch (e) {}
+    return { ...DEFAULT_RULES };
+  }
+  function saveRulesObj() {
+    localStorage.setItem(RULES_KEY, JSON.stringify(rules));
+  }
+
+  function loadFilters() {
+    try {
+      const raw = localStorage.getItem(FILTERS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { passOnly: true, hideSerial: true, hideGrad: false, maxAge: 45 };
+  }
+  function saveFilters() {
+    filters.maxAge = maxAgeMin;
+    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
+  }
 
   function toast(msg) {
     const t = document.getElementById('toast');
@@ -311,54 +403,63 @@
     setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  function riskCheck(t) {
-    const r = { pass: true, reasons: [] };
-
-    // Rule 2: bundlers
-    let bund = Number(t.bundlerHoldingsPct ?? 0);
-    if (bund > 0 && bund <= 1) bund *= 100;
-    if (bund > 25) { r.pass = false; r.reasons.push(`Bundlers ${bund.toFixed(0)}%`); }
-
-    // Rule 1: dev holdings if we have numeric
-    const dev = Number(t.devHoldingsPct ?? 0);
-    if (dev > 10) { r.pass = false; r.reasons.push(`Dev ${dev.toFixed(1)}%`); }
-
-    // Rule 3: serial / rug
-    if (t.isKnownRugWallet || t.flags?.serial_launcher || hasFlag(t, 'serial_launcher')) {
-      r.pass = false; r.reasons.push('Serial launcher');
-    }
-
-    // pumpdata rules_say
-    if (t.rules_say === 'skip') {
-      r.pass = false;
-      if (!r.reasons.length) r.reasons.push('pumpdata rules_say: skip');
-    }
-
-    // Rule 6: duplicate ticker hints from check questions
-    if (t.hasDuplicateTicker) {
-      r.pass = false; r.reasons.push('Duplicate ticker');
-    }
-
-    // Soft warnings (do not hard-block alone)
-    if (hasFlag(t, 'deployer_sells_fast')) r.reasons.push('Deployer sells fast (warn)');
-    if (hasFlag(t, 'never_ran')) r.reasons.push('Lookalikes never ran (warn)');
-    if (hasFlag(t, 'early_concentration')) {
-      if (bund <= 25) r.reasons.push('Early concentration (warn)');
-    }
-
-    return r;
-  }
-
   function hasFlag(t, name) {
     if (!t.flags) return false;
-    if (Array.isArray(t.flags)) return t.flags.some(f => f.flag === name || f === name);
+    if (Array.isArray(t.flags)) return t.flags.some(f => (f.flag || f) === name);
     return !!t.flags[name];
   }
-
   function flagNames(t) {
     if (!t.flags) return [];
     if (Array.isArray(t.flags)) return t.flags.map(f => f.flag || f).filter(Boolean);
     return Object.keys(t.flags).filter(k => t.flags[k]);
+  }
+
+  function riskCheck(t) {
+    const r = { pass: true, reasons: [] };
+    let bund = Number(t.bundlerHoldingsPct ?? 0);
+    if (bund > 0 && bund <= 1) bund *= 100;
+    const dev = Number(t.devHoldingsPct ?? 0);
+
+    if (rules.bundEnabled && bund > rules.bundMaxPct) {
+      r.pass = false; r.reasons.push(`Bundlers ${bund.toFixed(0)}% > ${rules.bundMaxPct}%`);
+    }
+    if (rules.devEnabled && dev > rules.devMaxPct) {
+      r.pass = false; r.reasons.push(`Dev ${dev.toFixed(1)}% > ${rules.devMaxPct}%`);
+    }
+    if (rules.serialEnabled && (t.isKnownRugWallet || hasFlag(t, 'serial_launcher'))) {
+      r.pass = false; r.reasons.push('Serial launcher');
+    }
+    if (rules.pumpSkipEnabled && t.rules_say === 'skip') {
+      r.pass = false;
+      if (!r.reasons.includes('Serial launcher')) r.reasons.push('pumpdata: skip');
+    }
+    if (rules.dupEnabled && t.hasDuplicateTicker) {
+      r.pass = false; r.reasons.push('Duplicate ticker');
+    }
+    if (hasFlag(t, 'deployer_sells_fast')) r.reasons.push('Deployer sells fast (warn)');
+    if (hasFlag(t, 'never_ran')) r.reasons.push('Lookalikes never ran (warn)');
+    return r;
+  }
+
+  function applyCheck(t, c) {
+    if (!c) return;
+    t.check = c;
+    t.rules_say = c.rules_say;
+    t.answer = c.answer;
+    t.questions = c.questions;
+    if (Array.isArray(c.flags)) {
+      t.flags = c.flags;
+    } else {
+      t.flags = c.flags || {};
+    }
+    if (hasFlag(t, 'serial_launcher')) t.isKnownRugWallet = true;
+    if (hasFlag(t, 'early_concentration') && t.bundlerHoldingsPct == null) {
+      t.bundlerHoldingsPct = 30;
+    }
+    const q = (c.questions || []).find(x => /ticker|real \$/i.test(x.q || ''));
+    if (q && /other graduated|launched \d+ times/i.test(q.a || '')) {
+      t.hasDuplicateTicker = true;
+    }
   }
 
   async function fetchLaunches() {
@@ -368,7 +469,7 @@
       const res = await fetch('https://pumpdata.fun/launches/since.json');
       const data = await res.json();
       const cols = data.columns || [];
-      const rows = (data.launches || []).slice(-40).reverse();
+      const rows = (data.launches || []).slice(-50).reverse();
       tokens = rows.map(row => {
         const o = {};
         cols.forEach((c, i) => o[c] = row[i]);
@@ -389,80 +490,76 @@
           graduated: !!o.migrated_at,
           source: o.source
         };
+        // Pre-filter serial from launch list (dev with many prior launches)
+        if (t.deployer_launches_before != null && t.deployer_launches_before >= 15) {
+          t.isKnownRugWallet = true;
+        }
         t.ruleCheck = riskCheck(t);
         return t;
       });
 
-      // Enrich first 8 with full pre-buy check (rate-limit friendly)
-      for (let i = 0; i < Math.min(8, tokens.length); i++) {
+      // Enrich a batch that might pass (young, not obvious serial)
+      const candidates = tokens.filter(t =>
+        (t.ageMinutes == null || t.ageMinutes <= maxAgeMin) &&
+        !(t.deployer_launches_before >= 30)
+      ).slice(0, 10);
+
+      for (const t of candidates) {
         try {
-          const c = await fetch(`https://pumpdata.fun/check/${tokens[i].mint}.json`).then(r => r.json());
-          applyCheck(tokens[i], c);
-          tokens[i].ruleCheck = riskCheck(tokens[i]);
+          const c = await fetch(`https://pumpdata.fun/check/${t.mint}.json`).then(r => r.json());
+          applyCheck(t, c);
+          t.ruleCheck = riskCheck(t);
         } catch (e) {}
       }
+      // Re-check all
+      tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
       renderTokens();
     } catch (e) {
       el.innerHTML = `<div class="empty">Could not load launches.<br>${esc(e.message)}</div>`;
     }
   }
 
-  function applyCheck(t, c) {
-    if (!c) return;
-    t.check = c;
-    t.rules_say = c.rules_say;
-    t.answer = c.answer;
-    t.questions = c.questions;
-    // flags can be array of {flag, says}
-    if (Array.isArray(c.flags)) {
-      t.flags = c.flags;
-      t.flagMap = {};
-      c.flags.forEach(f => { if (f.flag) t.flagMap[f.flag] = f.says || true; });
-    } else {
-      t.flags = c.flags || {};
-      t.flagMap = t.flags;
-    }
-    if (hasFlag(t, 'serial_launcher')) t.isKnownRugWallet = true;
-    if (hasFlag(t, 'early_concentration') && t.bundlerHoldingsPct == null) {
-      t.bundlerHoldingsPct = 30;
-    }
-    // Parse duplicate ticker from questions if present
-    const q = (c.questions || []).find(x => /ticker|real \$/i.test(x.q || ''));
-    if (q && /other graduated|launched \d+ times/i.test(q.a || '')) {
-      t.hasDuplicateTicker = true;
-    }
+  function filteredTokens() {
+    return tokens.filter(t => {
+      if (filters.passOnly && t.ruleCheck?.pass === false) return false;
+      if (filters.hideSerial && (t.isKnownRugWallet || hasFlag(t, 'serial_launcher') || (t.deployer_launches_before >= 15))) return false;
+      if (filters.hideGrad && t.graduated) return false;
+      if (t.ageMinutes != null && t.ageMinutes > maxAgeMin) return false;
+      return true;
+    });
   }
 
   function renderTokens() {
     const el = document.getElementById('tokenList');
-    if (!tokens.length) {
-      el.innerHTML = '<div class="empty">No launches</div>';
+    const list = filteredTokens();
+    const passCount = tokens.filter(t => t.ruleCheck?.pass !== false).length;
+    document.getElementById('countBar').textContent =
+      `Showing ${list.length} of ${tokens.length} launches · ${passCount} passed rules`;
+
+    if (!list.length) {
+      el.innerHTML = `<div class="empty">
+        No coins match your filters right now.<br><br>
+        <strong>Why?</strong> Most pump launches are serial-dev spam.<br><br>
+        Try: turn off “Pass only”, raise Max age, or loosen rules in the Rules tab — then Refresh.
+      </div>`;
       return;
     }
-    el.innerHTML = tokens.map(t => {
+    el.innerHTML = list.map(t => {
       const pass = t.ruleCheck?.pass !== false;
       const reasons = (t.ruleCheck?.reasons || []).join(' · ');
       const age = t.ageMinutes != null ? t.ageMinutes.toFixed(0) + 'm' : '—';
       const chips = [];
       if (t.deployer_launches_before != null) {
-        const cls = t.deployer_launches_before > 20 ? 'bad' : (t.deployer_launches_before > 5 ? 'warn' : '');
+        const cls = t.deployer_launches_before > 20 ? 'bad' : (t.deployer_launches_before > 5 ? 'warn' : 'good');
         chips.push(`<span class="chip ${cls}">dev ${t.deployer_launches_before} launches</span>`);
-      }
-      if (t.deployer_graduations_before != null) {
-        chips.push(`<span class="chip">grad ${t.deployer_graduations_before}</span>`);
       }
       if (t.bundlerHoldingsPct != null) {
         const b = Number(t.bundlerHoldingsPct);
-        const cls = b > 25 ? 'bad' : (b > 10 ? 'warn' : 'good');
+        const cls = b > rules.bundMaxPct ? 'bad' : (b > 10 ? 'warn' : 'good');
         chips.push(`<span class="chip ${cls}">bundle ${b.toFixed(0)}%</span>`);
       }
-      if (t.rules_say) {
-        chips.push(`<span class="chip ${t.rules_say==='skip'?'bad':'good'}">rules: ${esc(t.rules_say)}</span>`);
-      }
-      flagNames(t).forEach(f => {
-        chips.push(`<span class="chip bad">${esc(f)}</span>`);
-      });
-      if (t.graduated) chips.push(`<span class="chip warn">graduated</span>`);
+      if (t.rules_say) chips.push(`<span class="chip ${t.rules_say==='skip'?'bad':'good'}">rules: ${esc(t.rules_say)}</span>`);
+      flagNames(t).forEach(f => chips.push(`<span class="chip bad">${esc(f)}</span>`));
 
       return `<div class="token">
         <div class="token-top">
@@ -472,8 +569,7 @@
           </div>
           <span class="badge-r ${pass?'pass':'fail'}">${pass?'Pass':'Blocked'}</span>
         </div>
-        <div class="meta">
-          <span>${age}</span>
+        <div class="meta"><span>${age}</span>
           ${t.buyers_first_10s!=null?`<span>${t.buyers_first_10s} buyers/10s</span>`:''}
           <span>${esc(t.source||'')}</span>
         </div>
@@ -489,23 +585,20 @@
   }
 
   function openGmgn(mint) {
-    // Full GMGN token page — best source for live dev/bundle/smart money UI
     window.open('https://gmgn.ai/sol/token/' + mint, '_blank');
   }
 
   function renderPortfolio() {
     document.getElementById('bal').innerHTML = portfolio.balance.toFixed(4) + ' <span class="unit">SOL</span>';
-    const n = Object.keys(portfolio.positions).length;
-    document.getElementById('posCount').textContent = n;
+    document.getElementById('posCount').textContent = Object.keys(portfolio.positions).length;
     document.getElementById('tradeCount').textContent = portfolio.trades.length;
     const cost = Object.values(portfolio.positions).reduce((s,p)=>s+(p.totalCostSol||0),0);
     document.getElementById('equity').innerHTML = (portfolio.balance + cost).toFixed(4) + ' <span class="unit">SOL</span>';
 
     const pel = document.getElementById('positions');
     const list = Object.values(portfolio.positions);
-    if (!list.length) {
-      pel.innerHTML = '<div class="empty">No open positions</div>';
-    } else {
+    if (!list.length) pel.innerHTML = '<div class="empty">No open positions</div>';
+    else {
       pel.innerHTML = list.map(p => `
         <div class="pos-row">
           <div class="pos-info">
@@ -521,9 +614,8 @@
     }
 
     const tel = document.getElementById('trades');
-    if (!portfolio.trades.length) {
-      tel.innerHTML = '<div class="empty">No trades yet</div>';
-    } else {
+    if (!portfolio.trades.length) tel.innerHTML = '<div class="empty">No trades yet</div>';
+    else {
       tel.innerHTML = portfolio.trades.slice(0,30).map(t => `
         <div class="trade-row">
           <div class="pos-info">
@@ -540,14 +632,8 @@
   function buy(mint) {
     const t = tokens.find(x => x.mint === mint) || { mint };
     const check = riskCheck(t);
-    if (!check.pass) {
-      toast('Blocked: ' + check.reasons.join(', '));
-      return;
-    }
-    if (buySize > portfolio.balance) {
-      toast('Insufficient balance');
-      return;
-    }
+    if (!check.pass) { toast('Blocked: ' + check.reasons.join(', ')); return; }
+    if (buySize > portfolio.balance) { toast('Insufficient balance'); return; }
     const price = 0.00001;
     const tokensAmt = buySize / price;
     portfolio.balance -= buySize;
@@ -567,7 +653,7 @@
       id: Date.now().toString(), side: 'buy', mint, symbol: pos.symbol,
       amountSol: buySize, tokens: tokensAmt, priceSol: price, time: new Date().toISOString()
     });
-    save();
+    savePortfolio();
     renderPortfolio();
     toast(`Bought ${buySize.toFixed(2)} SOL of ${pos.symbol}`);
   }
@@ -586,17 +672,16 @@
       id: Date.now().toString(), side: 'sell', mint, symbol: pos.symbol,
       amountSol: sol, tokens: tok, percent: pct, time: new Date().toISOString()
     });
-    save();
+    savePortfolio();
     renderPortfolio();
     toast(`Sold ${pct}% of ${pos.symbol}`);
   }
 
   async function showAgents(mint) {
     const t = tokens.find(x => x.mint === mint) || { mint };
-    // Live enrich if missing check
+    document.getElementById('sheetContent').innerHTML = '<div class="loading">Running agents…</div>';
+    document.getElementById('sheet').classList.add('show');
     if (!t.check) {
-      document.getElementById('sheetContent').innerHTML = '<div class="loading">Running Risk Officer…</div>';
-      document.getElementById('sheet').classList.add('show');
       try {
         const c = await fetch(`https://pumpdata.fun/check/${mint}.json`).then(r => r.json());
         applyCheck(t, c);
@@ -607,60 +692,55 @@
     const age = t.ageMinutes != null ? t.ageMinutes.toFixed(0) + 'm' : 'unknown';
     let html = `<h3 style="font-family:var(--mono);margin-bottom:8px">${esc(t.symbol||mint.slice(0,8))}</h3>
       <p style="font-size:0.75rem;color:var(--muted);word-break:break-all;margin-bottom:10px">${esc(mint)}</p>
-      <button class="btn btn-gmgn btn-block" style="margin-bottom:14px" onclick="openGmgn('${mint}')">Open full stats on GMGN</button>`;
-
-    // Summary chips
-    const chips = [];
-    if (t.deployer_launches_before != null) chips.push(`Dev launches: ${t.deployer_launches_before}`);
-    if (t.deployer_graduations_before != null) chips.push(`Graduations: ${t.deployer_graduations_before}`);
-    if (t.bundlerHoldingsPct != null) chips.push(`Bundle: ${Number(t.bundlerHoldingsPct).toFixed(1)}%`);
-    if (t.rules_say) chips.push(`rules_say: ${t.rules_say}`);
-    flagNames(t).forEach(f => chips.push(f));
-    if (chips.length) {
-      html += `<div class="stat-chips" style="margin-bottom:12px">${chips.map(c=>`<span class="chip">${esc(c)}</span>`).join('')}</div>`;
-    }
-
+      <button class="btn btn-gmgn btn-block" style="margin-bottom:14px" onclick="openGmgn('${mint}')">Open on GMGN</button>`;
     html += agentBlock('Research', [
-      t.deployer_launches_before != null
-        ? `Deployer: ${t.deployer_launches_before} launches, ${t.deployer_graduations_before||0} grads`
-        : 'No deployer history yet',
+      t.deployer_launches_before != null ? `Deployer: ${t.deployer_launches_before} launches, ${t.deployer_graduations_before||0} grads` : 'No deployer history yet',
       ...(t.answer || []).slice(0, 2)
     ].filter(Boolean));
-
-    html += agentBlock('Momentum', [
-      `Age: ${age}`,
-      t.buyers_first_10s != null ? `${t.buyers_first_10s} buyers in first 10s` : null
-    ].filter(Boolean));
-
-    html += agentBlock('Event', [
-      t.graduated ? 'Already graduated' : 'Still on curve',
-      t.source === 'live' ? 'Live recorder (very fresh)' : null
-    ].filter(Boolean));
-
-    html += agentBlock('Portfolio Manager', [
-      `Suggested size: ${Math.min(0.25, Math.max(0.05, portfolio.balance * 0.05)).toFixed(3)} SOL`
-    ]);
-
-    html += agentBlock('Risk Officer', check.pass
-      ? ['Passed hard rules']
-      : check.reasons);
-
-    html += agentBlock('Reviewer', [
-      check.pass ? 'Eligible for paper trade' : 'Blocked — do not buy',
-      'For full GMGN holder/bundler/smart-money breakdown, use the GMGN button'
-    ]);
-
+    html += agentBlock('Momentum', [`Age: ${age}`, t.buyers_first_10s != null ? `${t.buyers_first_10s} buyers in first 10s` : null].filter(Boolean));
+    html += agentBlock('Event', [t.graduated ? 'Graduated' : 'On curve', t.source === 'live' ? 'Live recorder' : null].filter(Boolean));
+    html += agentBlock('Portfolio Manager', [`Suggested: ${Math.min(0.25, Math.max(0.05, portfolio.balance * 0.05)).toFixed(3)} SOL`]);
+    html += agentBlock('Risk Officer', check.pass ? ['Passed your current rules'] : check.reasons);
+    html += agentBlock('Reviewer', [check.pass ? 'Eligible for paper trade' : 'Blocked by Risk Officer']);
     document.getElementById('sheetContent').innerHTML = html;
-    document.getElementById('sheet').classList.add('show');
   }
-
   function agentBlock(name, notes) {
-    return `<div class="agent"><strong>${name}</strong><p>${notes.map(esc).join('<br>')}</p></div>`;
+    return `<div class="agent" style="background:var(--elev);border-radius:10px;padding:12px;margin-bottom:8px"><strong style="color:var(--accent)">${name}</strong><p style="font-size:0.75rem;color:var(--muted);margin-top:4px">${notes.map(esc).join('<br>')}</p></div>`;
   }
-
   function esc(s) {
     if (s == null) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Rules UI
+  function fillRulesUI() {
+    document.getElementById('rDev').checked = rules.devEnabled;
+    document.getElementById('rDevPct').value = rules.devMaxPct;
+    document.getElementById('rBund').checked = rules.bundEnabled;
+    document.getElementById('rBundPct').value = rules.bundMaxPct;
+    document.getElementById('rSerial').checked = rules.serialEnabled;
+    document.getElementById('rPumpSkip').checked = rules.pumpSkipEnabled;
+    document.getElementById('rDevSell').checked = rules.devSellEnabled;
+    document.getElementById('rGrad').checked = rules.gradEnabled;
+    document.getElementById('rDup').checked = rules.dupEnabled;
+  }
+  function readRulesUI() {
+    rules.devEnabled = document.getElementById('rDev').checked;
+    rules.devMaxPct = Number(document.getElementById('rDevPct').value) || 10;
+    rules.bundEnabled = document.getElementById('rBund').checked;
+    rules.bundMaxPct = Number(document.getElementById('rBundPct').value) || 25;
+    rules.serialEnabled = document.getElementById('rSerial').checked;
+    rules.pumpSkipEnabled = document.getElementById('rPumpSkip').checked;
+    rules.devSellEnabled = document.getElementById('rDevSell').checked;
+    rules.gradEnabled = document.getElementById('rGrad').checked;
+    rules.dupEnabled = document.getElementById('rDup').checked;
+  }
+
+  // Filters UI
+  function syncFilterChips() {
+    document.getElementById('fPass').classList.toggle('on', !!filters.passOnly);
+    document.getElementById('fSerial').classList.toggle('on', !!filters.hideSerial);
+    document.getElementById('fGrad').classList.toggle('on', !!filters.hideGrad);
   }
 
   document.querySelectorAll('.nav button').forEach(btn => {
@@ -669,12 +749,12 @@
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('screen-' + btn.dataset.screen).classList.add('active');
+      if (btn.dataset.screen === 'rules') fillRulesUI();
     });
   });
 
   document.getElementById('themeBtn').addEventListener('click', () => {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('novabot_theme', next);
     document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
@@ -688,11 +768,46 @@
     document.getElementById('sizeVal').textContent = buySize.toFixed(2);
     renderTokens();
   });
+  document.getElementById('maxAgeSlider').addEventListener('input', e => {
+    maxAgeMin = parseInt(e.target.value, 10);
+    document.getElementById('maxAgeVal').textContent = maxAgeMin + 'm';
+    saveFilters();
+    renderTokens();
+  });
+  document.getElementById('maxAgeSlider').value = maxAgeMin;
+  document.getElementById('maxAgeVal').textContent = maxAgeMin + 'm';
+
+  document.querySelectorAll('.fchip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const key = chip.dataset.filter;
+      filters[key] = !filters[key];
+      saveFilters();
+      syncFilterChips();
+      renderTokens();
+    });
+  });
+
+  document.getElementById('saveRulesBtn').addEventListener('click', () => {
+    readRulesUI();
+    saveRulesObj();
+    tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
+    renderTokens();
+    toast('Rules saved');
+  });
+  document.getElementById('resetRulesBtn').addEventListener('click', () => {
+    rules = { ...DEFAULT_RULES };
+    saveRulesObj();
+    fillRulesUI();
+    tokens.forEach(t => { t.ruleCheck = riskCheck(t); });
+    renderTokens();
+    toast('Rules reset to defaults');
+  });
+
   document.getElementById('refreshBtn').addEventListener('click', fetchLaunches);
   document.getElementById('resetBtn').addEventListener('click', () => {
     if (!confirm('Reset portfolio to 5 SOL?')) return;
     portfolio = { balance: START, positions: {}, trades: [], createdAt: new Date().toISOString() };
-    save();
+    savePortfolio();
     renderPortfolio();
     toast('Portfolio reset');
   });
@@ -700,6 +815,8 @@
     if (e.target.id === 'sheet') e.target.classList.remove('show');
   });
 
+  fillRulesUI();
+  syncFilterChips();
   renderPortfolio();
   fetchLaunches();
   </script>
