@@ -1,36 +1,14 @@
 {
   "version": 3,
-  "exportedAt": "2026-10-31T01:31:53.848Z",
+  "exportedAt": "2026-10-31T17:54:58.392Z",
   "app": "NovaBot",
   "source": "cloudflare-worker",
   "portfolio": {
     "balance": 5,
     "positions": {},
-    "trades": [
-      {
-        "id": "1793408440151",
-        "side": "sell",
-        "mint": "LCNcvaC4ozvrhmBi34rVGXjSrkCQ59XyKfzycQipump",
-        "symbol": "launchcard",
-        "amountSol": 0.1,
-        "tokens": 7598.7841945288765,
-        "priceSol": 0.00001316,
-        "percent": 100,
-        "time": "2026-10-31T01:00:40.151Z"
-      },
-      {
-        "id": "1793408129097",
-        "side": "buy",
-        "mint": "LCNcvaC4ozvrhmBi34rVGXjSrkCQ59XyKfzycQipump",
-        "symbol": "launchcard",
-        "amountSol": 0.1,
-        "tokens": 7598.7841945288765,
-        "priceSol": 0.00001316,
-        "time": "2026-10-31T00:55:29.097Z"
-      }
-    ],
-    "createdAt": "2026-10-31T00:53:03.520Z",
-    "updatedAt": "2026-10-31T01:31:53.688Z"
+    "trades": [],
+    "createdAt": "2026-10-31T00:52:31.393Z",
+    "updatedAt": "2026-10-31T17:54:58.301Z"
   },
   "rules": {
     "devEnabled": true,
